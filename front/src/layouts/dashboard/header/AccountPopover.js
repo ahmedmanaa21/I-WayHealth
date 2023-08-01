@@ -9,7 +9,8 @@ import account from '../../../_mock/account';
 
 // ----------------------------------------------------------------------
 
-import { useUserStore , useAuthStore } from "../../../utils/zustand";
+import { useUserStore, useAuthStore } from "../../../utils/zustand";
+import defaultAvatar from '../../../utils/profilePictures/default.jpg';
 
 const MENU_OPTIONS = [
   {
@@ -30,8 +31,8 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const navigate = useNavigate();
-  const clearUser = useUserStore ((state) => state.clearUser);
-  const logout = useAuthStore ((state) => state.logout);
+  const clearUser = useUserStore((state) => state.clearUser);
+  const logout = useAuthStore((state) => state.logout);
   const [open, setOpen] = useState(null);
   const userr = JSON.parse(localStorage.getItem("user"));
 
@@ -47,7 +48,7 @@ export default function AccountPopover() {
   const handleLogout = () => {
     localStorage.clear();
     clearUser();
-    logout(); 
+    logout();
     navigate("/login");
   };
 
@@ -71,7 +72,13 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+         {userr?.image ? (
+        // <Avatar src={require(`../../../utils/profilePictures/${userr.image}`)} alt="User Profile" />
+        <Avatar src={`../../../utils/profilePictures/${userr.image}`} alt="User Profile" />
+      ) : (
+        <Avatar src={defaultAvatar} alt="Default User Profile" />
+      )}
+        
       </IconButton>
 
       <Popover

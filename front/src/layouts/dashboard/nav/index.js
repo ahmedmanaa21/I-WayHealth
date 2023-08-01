@@ -14,7 +14,6 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
-
 import { useUserStore , useAuthStore } from "../../../utils/zustand";
 // ----------------------------------------------------------------------
 
@@ -40,7 +39,8 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const userr = JSON.parse(localStorage.getItem("user"));
   const displayName = `${userr?.firstname || ''} ${userr?.lastname || ''}`.trim() || 'Guest';
-  const photoURL = userr?.photoURL || '/assets/images/avatars/avatar_default.jpg';
+
+
   const isDesktop = useResponsive('up', 'lg');
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
         <StyledAccount>
-          <Avatar src={photoURL} alt="photoURL" />
+        <Avatar src={`../../../utils/profilePictures/${userr.image}`} alt="User Profile" />
 
           <Box sx={{ ml: 2 }}>
             <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>

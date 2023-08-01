@@ -5,8 +5,6 @@ function verifyToken(req, res, next) {
   const cancelToken = req.headers["authorization"]?.split(" ")[2];
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      console.log(token);
-      console.log(decoded);
       if (err)
         return res
           .status(401)

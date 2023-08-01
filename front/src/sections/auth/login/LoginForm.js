@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link } from 'react-router-dom';
 import axios from 'axios';
 import { TextField, Button, Stack } from '@mui/material';
 import swal from 'sweetalert';
 import { useAuthStore , useUserStore } from "../../../utils/zustand";
-
-
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -46,7 +44,10 @@ export default function LoginForm() {
     } catch (error) {
       // Handle login error
       console.error(error);
-      if (error.response && error.response.status === 404) {
+      if (error.response && error.response.status === 401) {
+        // User not approved
+        swal('Not Approved', 'Please wait for approval to login', 'warning');
+      } else if (error.response && error.response.status === 404) {
         // User not found
         swal('User not found', 'Please check your username and password', 'error');
       } else {
@@ -73,6 +74,16 @@ export default function LoginForm() {
       <Button variant="contained" onClick={handleLogin}>
         Login
       </Button>
+      <Button
+            fullWidth
+            size="large"
+            color="inherit"
+            variant="outlined"
+            component={Link} // Use the Link component
+            to="/ForgotPassword" // Navigate to the "ForgotPage"
+          >
+            Forgot Password
+          </Button>
       </Stack>
     </>
   );

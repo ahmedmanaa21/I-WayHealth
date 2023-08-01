@@ -8,7 +8,10 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
+import SignupPage from './pages/SignupPage';
+import ForgotPassword from './pages/ForgotPassword';
 import { useAuthStore } from "./utils/zustand";
+import NewPassword from './pages/page-new-password';
 
 export default function Router() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -28,6 +31,18 @@ export default function Router() {
     {
       path: 'login',
       element: isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />,
+    },
+    {
+      path: 'signup',
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage />, 
+    },
+    {
+      path: 'ForgotPassword',
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <ForgotPassword />, 
+    },
+    {
+      path: 'page-new-password',
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <NewPassword />, 
     },
     {
       element: <SimpleLayout />,
