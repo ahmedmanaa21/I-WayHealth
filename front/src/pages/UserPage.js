@@ -102,6 +102,7 @@ export default function UserPage() {
   const userr = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const user = useAuthStore((state) => state.user);
+  const images = require.context('../utils/profilePictures/', true, /\.(png|jpe?g|gif|svg)$/);
 
 
   useEffect(() => {
@@ -187,13 +188,11 @@ export default function UserPage() {
               <TableBody>
                 {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => {
                   const { _id, firstname, lastname, email, image, role, place, approved } = user;
-
                   return (
                     <TableRow key={_id} tabIndex={-1} role="checkbox">
                       <TableCell component="th" scope="row">
                         <Stack direction="row" alignItems="center" spacing={3}>
-                        {/* <Avatar alt={""} src={require(`../utils/profilePictures/${image}`)} /> */}
-                        <Avatar alt={""} src={`../utils/profilePictures/${image}`} />
+                        <Avatar alt="User Profile" src={images(`./${image}`)} />
                           <Typography variant="subtitle2" noWrap>
                             {firstname} {lastname}
                           </Typography>

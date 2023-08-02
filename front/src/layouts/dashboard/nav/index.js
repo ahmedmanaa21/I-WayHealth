@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import { useEffect , useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
@@ -43,6 +43,23 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const isDesktop = useResponsive('up', 'lg');
 
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    if (userr.image) {
+      // Load the image dynamically and set it in the state
+      import(`../../../utils/profilePictures/${userr.image}`)
+        .then((imageModule) => {
+          setProfileImage(imageModule.default);
+          
+        })
+        .catch((error) => {
+          console.error(error);
+          setProfileImage(null); // Set to a default image or handle error as needed
+        });
+    }
+  }, [userr.image]);
+
   useEffect(() => {
     if (openNav) {
       onCloseNav();
@@ -64,7 +81,7 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
         <StyledAccount>
-        <Avatar src={`../../../utils/profilePictures/${userr.image}`} alt="User Profile" />
+        <Avatar src={profileImage} alt="User Profile" />
 
           <Box sx={{ ml: 2 }}>
             <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
