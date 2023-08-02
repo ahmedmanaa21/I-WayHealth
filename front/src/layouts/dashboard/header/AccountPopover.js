@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 
 // @mui
@@ -35,6 +35,22 @@ export default function AccountPopover() {
   const logout = useAuthStore((state) => state.logout);
   const [open, setOpen] = useState(null);
   const userr = JSON.parse(localStorage.getItem("user"));
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    if (userr.image) {
+      // Load the image dynamically and set it in the state
+      import(`../../../utils/profilePictures/${userr.image}`)
+        .then((imageModule) => {
+          setProfileImage(imageModule.default);
+          
+        })
+        .catch((error) => {
+          console.error(error);
+          setProfileImage(null); // Set to a default image or handle error as needed
+        });
+    }
+  }, [userr.image]);
 
 
   const handleOpen = (event) => {
@@ -72,9 +88,9 @@ export default function AccountPopover() {
           }),
         }}
       >
-         {userr?.image ? (
-        // <Avatar src={require(`../../../utils/profilePictures/${userr.image}`)} alt="User Profile" />
-        <Avatar src={`../../../utils/profilePictures/${userr.image}`} alt="User Profile" />
+         {userr.image ? (
+        <Avatar src={profileImage} alt="User Profile" />
+        // <Avatar src={`../../../utils/profilePictures/${userr.image}`} alt="User Profile" />
       ) : (
         <Avatar src={defaultAvatar} alt="Default User Profile" />
       )}
@@ -128,3 +144,4 @@ export default function AccountPopover() {
     </>
   );
 }
+
