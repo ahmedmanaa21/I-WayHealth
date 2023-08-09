@@ -1,5 +1,7 @@
 import { useState , useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -36,6 +38,7 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const userr = JSON.parse(localStorage.getItem("user"));
   const [profileImage, setProfileImage] = useState(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (userr.image) {
@@ -66,6 +69,57 @@ export default function AccountPopover() {
     clearUser();
     logout();
     navigate("/login");
+  };
+
+  const handleProfileEdit = () => {
+    const initialFormData = {
+      firstname: userr.firstname,
+      lastname: userr.lastname,
+      email: userr.email,
+    };
+  
+    Swal.fire({
+      title: 'Update Profile',
+      html: `
+        <input type="text" name="firstname" value="${initialFormData.firstname}" placeholder="First Name" required />
+        <input type="text" name="lastname" value="${initialFormData.lastname}" placeholder="Last Name" required />
+        <input type="email" name="email" value="${initialFormData.email}" placeholder="Email" required />
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      preConfirm: () => {
+        const formData = {
+          firstname: Swal.getInputValue('input[name="firstname"]'),
+          lastname: Swal.getInputValue('input[name="lastname"]'),
+          email: Swal.getInputValue('input[name="email"]'),
+        };
+  
+        return axios
+          .put(`http://localhost:3000/user/${userr._id}`, formData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            console.log(response);
+            localStorage.setItem('user', JSON.stringify(response.data));
+            window.location.reload();
+            return response;
+          })
+          .catch((error) => {
+            console.log(error);
+            Swal.showValidationMessage('Something went wrong');
+          });
+      },
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Profile Updated',
+          icon: 'success',
+        });
+      }
+    });
   };
 
 
@@ -128,11 +182,9 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
-              {option.label}
-            </MenuItem>
-          ))}
+             <MenuItem onClick={handleProfileEdit}>
+             Profile
+           </MenuItem>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
