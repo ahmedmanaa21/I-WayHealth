@@ -24,8 +24,7 @@ import {
   TableHead,
 } from '@mui/material';
 import Iconify from '../components/iconify';
-import { useUserStore , useAuthStore } from "../utils/zustand";
-
+import { useUserStore, useAuthStore } from "../utils/zustand";
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -46,13 +45,17 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openPopoverId, setOpenPopoverId] = useState(null);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+  const handleOpenMenu = (event, userId) => {
+    setAnchorEl(event.currentTarget);
+    setOpenPopoverId(userId);
   };
 
   const handleCloseMenu = () => {
-    setOpen(null);
+    setAnchorEl(null);
+    setOpenPopoverId(null);
   };
 
   const handleRequestSort = (event, property) => {
@@ -118,7 +121,7 @@ export default function UserPage() {
       .catch((err) => {
         console.log(err);
       });
-  }, [users]);
+  }, []);
 
   const handleDelete = (user) => {
     swal({
@@ -139,6 +142,19 @@ export default function UserPage() {
             swal('User has been deleted!', {
               icon: 'success',
             });
+            axios
+            .get('http://localhost:3000/user/users', {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            })
+            .then((res) => {
+              setUsers(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
           })
           .catch((error) => {
             swal('Oops! Something went wrong.', {
@@ -148,6 +164,51 @@ export default function UserPage() {
       }
     });
   };
+
+  const handleApprove = (user) => {
+    if (user.approved) {
+      swal('User is already approved!', {
+        icon: 'info',
+      });
+      return;
+    }
+    swal({
+      title: 'Are you sure?',
+      text: 'Once approved, the user will be able to login.',
+      icon: 'warning',
+      buttons: true,
+      dangerMode: true,
+    }).then((willApprove) => {
+      if (willApprove) {
+        axios
+          .put(`http://localhost:3000/user/approve/${user._id}`, {
+            approved: true,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            // Update the user's approved status in the local state or refresh the user data
+            // For example, if you want to update the local state, you can do:
+            setUsers(prevUsers => prevUsers.map(u => u._id === user._id ? { ...u, approved: true } : u));
+  
+            swal('User has been approved!', {
+              icon: 'success',
+            });
+          })
+          .catch((error) => {
+            swal('Oops! Something went wrong.', {
+              icon: 'error',
+            });
+          });
+      }
+    });
+  };
+  
+         
+              
 
   const filteredUsers = users.filter((user) => user.firstname.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
 
@@ -186,13 +247,14 @@ export default function UserPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => {
+                {filteredUsers.map((user) => {
                   const { _id, firstname, lastname, email, image, role, place, approved } = user;
+
                   return (
                     <TableRow key={_id} tabIndex={-1} role="checkbox">
                       <TableCell component="th" scope="row">
                         <Stack direction="row" alignItems="center" spacing={3}>
-                        <Avatar alt="User Profile" src={images(`./${image}`)} />
+                          <Avatar alt="User Profile" src={images(`./${image}`)} />
                           <Typography variant="subtitle2" noWrap>
                             {firstname} {lastname}
                           </Typography>
@@ -207,13 +269,13 @@ export default function UserPage() {
                           <IconButton
                             size="large"
                             color="inherit"
-                            onClick={handleOpenMenu}
+                            onClick={(event) => handleOpenMenu(event, _id)}
                           >
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                           <Popover
-                            open={Boolean(open)}
-                            anchorEl={open}
+                            open={openPopoverId === _id}
+                            anchorEl={openPopoverId === _id ? anchorEl : null}
                             onClose={handleCloseMenu}
                             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
                             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -233,17 +295,16 @@ export default function UserPage() {
                               <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                               Delete
                             </MenuItem>
+                            <MenuItem onClick={() => handleApprove(user)}>
+                              <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
+                              Approve
+                            </MenuItem>
                           </Popover>
                         </div>
                       </TableCell>
                     </TableRow>
                   );
                 })}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>

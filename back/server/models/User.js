@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const Roles = {
-    User: "User",
-    Admin: "Admin",
+    Doctor: "Doctor",
+    Pharmacist: "Pharmacist",
   };
 
 const UserSchema = new mongoose.Schema({
@@ -41,7 +41,7 @@ const UserSchema = new mongoose.Schema({
         enum: Object.values(Roles),
         default: Roles.Member,
     },
-    place: {
+    address: {
         type: String,
         required: true,
     },
