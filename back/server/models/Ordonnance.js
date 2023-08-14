@@ -5,7 +5,8 @@ const Medicament = require("./Medicaments");
 const ordonnanceSchema = new mongoose.Schema({
     _id: Number,
     consultation: {
-        type: Consultation.Schema,
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Consultation', 
         required: true,
     },
     commentaire: {

@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const User = require("./User");
 const Adherants = require("./Adherants");
+const Beneficaires = require("./Beneficaires");
 
 const ConsultationSchema = new mongoose.Schema({
     _id: Number,
     medecin: {
-        type: User.Schema,
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Adherants', 
         required: true,
     },
     date: {
@@ -13,11 +15,13 @@ const ConsultationSchema = new mongoose.Schema({
         required: true,
     },
     adherant: {
-        type: Adherants.Schema,
+        type: mongoose.Schema.Types.ObjectId, // Assuming Adherants is referenced by ObjectId
+        ref: 'Adherants', // This should match the model name of Adherants
         required: true,
     },
     beneficiaire: {
-        type: beneficiaire.Schema,
+        type: mongoose.Schema.Types.ObjectId, // Assuming Adherants is referenced by ObjectId
+        ref: 'Beneficaires', // This should match the model name of Adherants
         required: true,
     },
     diagnostic: {
@@ -34,5 +38,5 @@ const ConsultationSchema = new mongoose.Schema({
 
 
 const Consultation = mongoose.model("Consultation", ConsultationSchema);
-module.exports = Dossier ;
+module.exports = Consultation ;
 

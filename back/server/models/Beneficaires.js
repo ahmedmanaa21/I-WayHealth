@@ -34,7 +34,8 @@ const BeneficairesSchema = new mongoose.Schema({
         enum: Object.values(Situation_familiale),
     },
     Adherant: {
-        type: Adherants.Schema,
+        type: mongoose.Schema.Types.ObjectId, // Assuming Adherants is referenced by ObjectId
+        ref: 'Adherants', // This should match the model name of Adherants
         required: true,
     },
     },

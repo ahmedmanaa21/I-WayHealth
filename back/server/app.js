@@ -28,3 +28,7 @@ app.use(express.json());
 
   const UserRoutes = require("./routes/UserRoutes");
   app.use("/user", UserRoutes);
+
+  const Routes = require("./routes/Routes");
+  app.use("/api", Routes);
+  
