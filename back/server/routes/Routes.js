@@ -37,11 +37,59 @@ router.get('/adherants/:id', async (req, res) => {
 // CREATE a new adherant
 router.post('/adherants', async (req, res) => {
     try {
-        const adherant = await Adherants.create(req.body);
-        res.json(adherant);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+        const { email: email,
+            nom: nom,
+            prenom: prenom,
+            situation_familiale: situation_familiale,
+            date_naissance: date_naissance,
+            vip: vip,
+            situation_adhesion: situation_adhesion,
+            date_adhesion: date_adhesion,
+            apci: apci,
+            couple: couple,
+            photo: photo,
+            Benefciaire: Benefciaire
+
+        } = req.body;
+        const Adherant = new Adherants({
+            email: email,
+            nom: nom,
+            prenom: prenom,
+            situation_familiale: situation_familiale,
+            date_naissance: date_naissance,
+            vip: vip,
+            situation_adhesion: situation_adhesion,
+            date_adhesion: date_adhesion,
+            apci: apci,
+            couple: couple,
+            photo: photo,
+            Benefciaire: []
+        });
+
+
+        if (Benefciaire && Benefciaire.length > 0) {
+            for (const beneficaireData of Benefciaire) {
+                const beneficaire = new Beneficaires({
+
+                    nom: beneficaireData.nom,
+                    prenom: beneficaireData.prenom,
+                    date_naissance: beneficaireData.date_naissance,
+                    sexe: beneficaireData.sexe,
+                    situation_familiale: beneficaireData.situation_familiale,
+                    Adherant: Adherant
+                });
+                await beneficaire.save();
+                Adherant.Benefciaire.push(beneficaire);
+            }
+        }
+
+        await Adherant.save();
+
+
+        res.status(201).json(Benefciaire);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Une erreur est survenue lors de la création de l'adherent." });
     }
 });
 

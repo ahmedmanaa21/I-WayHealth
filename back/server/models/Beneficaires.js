@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
 const Adherants = require("./Adherants");
-  
+
 const Situation_familiale = {
     Wife: "Wife",
     Child: "Child",
-    };
+};
 
 const Sexe = {
     Masculin: "Masculin",
     Feminine: "Feminine",
-    };
+};
 
 const BeneficairesSchema = new mongoose.Schema({
-    _id: Number,
+
     nom: {
         type: String,
         required: true,
@@ -38,12 +38,12 @@ const BeneficairesSchema = new mongoose.Schema({
         ref: 'Adherants', // This should match the model name of Adherants
         required: true,
     },
-    },
+},
     { timestamps: true }
 );
 
 const Beneficaires = mongoose.model("Beneficaires", BeneficairesSchema);
 module.exports = Beneficaires;
 
-    
-    
+
+
