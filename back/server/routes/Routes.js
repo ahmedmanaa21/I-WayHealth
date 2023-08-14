@@ -596,3 +596,4 @@ router.delete('/dossier/:id', async (req, res) => {
 );
 
 
+module.exports = router;

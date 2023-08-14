@@ -23,7 +23,8 @@ const DossierSchema = new mongoose.Schema({
         enum: Object.values(pathologie),
     },
     consultation: {
-        type: Consultation.Schema,
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Consultation', 
         required: true,
     },
 
