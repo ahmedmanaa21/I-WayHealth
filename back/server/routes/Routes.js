@@ -82,7 +82,7 @@ router.post('/adherants', async (req, res) => {
 
 
 
-// UPDATE an existing adherant by ID
+// UPDATE an existing adherant by ID 
 router.put('/adherants/:id', async (req, res) => {
     try {
         const updatedAdherant = await Adherants.findByIdAndUpdate(
@@ -91,6 +91,7 @@ router.put('/adherants/:id', async (req, res) => {
             { new: true } // Return the updated adherant
         );
         if (!updatedAdherant) {
+            
             return res.status(404).json({ error: 'Adherant not found' });
         }
         res.json(updatedAdherant);
@@ -99,6 +100,8 @@ router.put('/adherants/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
 
 // DELETE an adherant by ID
 router.delete('/adherants/:id', async (req, res) => {
@@ -146,16 +149,9 @@ router.get('/beneficaires/:id', async (req, res) => {
 router.post('/beneficaires', async (req, res) => {
     try {
         const beneficaire = await Beneficaires.create(req.body);
-        
-        // Find the adherant associated with the beneficaire
         const adherant = await Adherants.findById(beneficaire.Adherant);
-        
-        // Add the beneficaire to the adherant's Benefciaire array
         adherant.Benefciaire.push(beneficaire);
-        
-        // Save the changes to the adherant
         await adherant.save();
-        
         res.json(beneficaire);
     } catch (err) {
         console.log(err);
@@ -169,7 +165,7 @@ router.put('/beneficaires/:id', async (req, res) => {
         const updatedBeneficaire = await Beneficaires.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true } // Return the updated beneficaire
+            { new: true } 
         );
         if (!updatedBeneficaire) {
             return res.status(404).json({ error: 'Beneficaire not found' });
@@ -243,12 +239,21 @@ router.post('/consultations', async (req, res) => {
         const consultation = req.body;
         const dbConsultation = new Consultation({
             medecin: await User.findById(consultation.medecin),
+            
             date: consultation.date,
             adherant: await Adherants.findById(consultation.adherant),
             beneficiaire: await Beneficaires.findById(consultation.beneficiaire),
             diagnostic: consultation.diagnostic,
         });
-
+        if (medecin.role !== 'medecin') {
+            return res.status(403).json({ error: 'You are not authorized to perform this operation' });
+        }
+        if (adherant === null) {
+            return res.status(404).json({ error: 'Adherant not found' });
+        }
+        if (beneficiaire === null) {
+            return res.status(404).json({ error: 'Beneficiaire not found' });
+        }
         const savedConsultation = await dbConsultation.save();
         res.json(savedConsultation);
     } catch (err) {
