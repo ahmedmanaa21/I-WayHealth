@@ -37,46 +37,99 @@ router.get('/adherants/:id', async (req, res) => {
 // CREATE a new adherant with assigining his beneficaires to it and save them to beneficaires collection
 router.post('/adherants', async (req, res) => {
     try {
-        const adherantData = req.body;
-        const adherant = new Adherants({
-            nom: adherantData.nom,
-            prenom: adherantData.prenom,
-            date_naissance: adherantData.date_naissance,
-            sexe: adherantData.sexe,
-            date_adhesion: adherantData.date_adhesion,
-            adresse: adherantData.adresse,
-            vip: adherantData.vip,
-            telephone: adherantData.telephone,
-            email: adherantData.email,
-            situation_familiale: adherantData.situation_familiale,
-            situation_adhesion: adherantData.situation_adhesion,
-            Benefciaire: [],
-        });
+    //     const adherantData = req.body;
+    //     const adherant = new Adherants({
+    //         nom: adherantData.nom,
+    //         prenom: adherantData.prenom,
+    //         date_naissance: adherantData.date_naissance,
+    //         sexe: adherantData.sexe,
+    //         date_adhesion: adherantData.date_adhesion,
+    //         adresse: adherantData.adresse,
+    //         vip: adherantData.vip,
+    //         telephone: adherantData.telephone,
+    //         email: adherantData.email,
+    //         situation_familiale: adherantData.situation_familiale,
+    //         situation_adhesion: adherantData.situation_adhesion,
+    //         Benefciaire: [],
+    //     });
         
-        for (const beneficaireData of adherantData.Benefciaire) {
-            const beneficaire = new Beneficaires(beneficaireData);
-            beneficaire.Adherant = adherant; 
-            await beneficaire.save();
-            adherant.Benefciaire.push(beneficaire);
+    //     for (const beneficaireData of adherantData.Benefciaire) {
+    //         const beneficaire = new Beneficaires(beneficaireData);
+    //         beneficaire.Adherant = adherant; 
+    //         await beneficaire.save();
+    //         adherant.Benefciaire.push(beneficaire);
+    //     }
+    //     await adherant.save();
+
+
+    //     const adherantResponse = {
+    //         _id: adherant._id,
+    //         nom: adherant.nom,
+    //         prenom: adherant.prenom,            
+    //         Benefciaire: adherant.Benefciaire.map(beneficaire => ({
+    //             _id: beneficaire._id,
+    //             nom: beneficaire.nom,
+    //             prenom: beneficaire.prenom,
+
+    //         })),
+    //     };
+    //     res.json(adherantResponse);
+    // } catch (err) {
+    //     console.log(err);
+    //     res.status(500).json({ error: 'Internal server error' });
+        const { email: email,
+            nom: nom,
+            prenom: prenom,
+            situation_familiale: situation_familiale,
+            date_naissance: date_naissance,
+            vip: vip,
+            situation_adhesion: situation_adhesion,
+            date_adhesion: date_adhesion,
+            apci: apci,
+            couple: couple,
+            photo: photo,
+            Benefciaire: Benefciaire
+
+        } = req.body;
+        const Adherant = new Adherants({
+            email: email,
+            nom: nom,
+            prenom: prenom,
+            situation_familiale: situation_familiale,
+            date_naissance: date_naissance,
+            vip: vip,
+            situation_adhesion: situation_adhesion,
+            date_adhesion: date_adhesion,
+            apci: apci,
+            couple: couple,
+            photo: photo,
+            Benefciaire: []
+        });
+
+
+        if (Benefciaire && Benefciaire.length > 0) {
+            for (const beneficaireData of Benefciaire) {
+                const beneficaire = new Beneficaires({
+
+                    nom: beneficaireData.nom,
+                    prenom: beneficaireData.prenom,
+                    date_naissance: beneficaireData.date_naissance,
+                    sexe: beneficaireData.sexe,
+                    situation_familiale: beneficaireData.situation_familiale,
+                    Adherant: Adherant
+                });
+                await beneficaire.save();
+                Adherant.Benefciaire.push(beneficaire);
+            }
         }
-        await adherant.save();
+
+        await Adherant.save();
 
 
-        const adherantResponse = {
-            _id: adherant._id,
-            nom: adherant.nom,
-            prenom: adherant.prenom,            
-            Benefciaire: adherant.Benefciaire.map(beneficaire => ({
-                _id: beneficaire._id,
-                nom: beneficaire.nom,
-                prenom: beneficaire.prenom,
-
-            })),
-        };
-        res.json(adherantResponse);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(201).json(Benefciaire);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Une erreur est survenue lors de la création de l'adherent." });
     }
 });
 

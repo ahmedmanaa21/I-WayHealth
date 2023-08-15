@@ -6,7 +6,7 @@ const Situation_familiale = {
     Married: "Married",
     Divorced: "Divorced",
     Widowed: "Widowed",
-  };
+};
 
 const Situation_adhesion = {
     Waiting: "Waiting",
@@ -38,11 +38,11 @@ const AdherantsSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    vip : {
+    vip: {
         type: Boolean,
         default: false,
     },
-    situation_adhesion : {
+    situation_adhesion: {
         type: String,
         enum: Object.values(Situation_adhesion),
         default: Situation_adhesion.Waiting,
@@ -51,19 +51,19 @@ const AdherantsSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    apci : {
+    apci: {
         type: Boolean,
         default: false,
     },
-    couple : {
+    couple: {
         type: Boolean,
         default: false,
     },
-    photo : {
+    photo: {
         type: String,
         required: false,
     },
-    Benefciaire : {
+    Benefciaire: {
         type: [Beneficaires.schema],
         required: false,
 },
@@ -72,7 +72,7 @@ const AdherantsSchema = new mongoose.Schema({
 );
 
 const Adherants = mongoose.model("Adherants", AdherantsSchema);
-module.exports = Adherants; 
+module.exports = Adherants;
 
 
 
