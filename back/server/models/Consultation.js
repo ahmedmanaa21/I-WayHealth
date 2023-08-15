@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const User = require("./User");
 const Adherants = require("./Adherants");
 const Beneficaires = require("./Beneficaires");
+const Ordonnance = require("./ordonnance");
 
 const ConsultationSchema = new mongoose.Schema({
-    _id: Number,
     medecin: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Adherants', 
+        type: mongoose.Schema.Types.Number, 
+        ref: 'User', 
         required: true,
     },
     date: {
@@ -15,20 +15,16 @@ const ConsultationSchema = new mongoose.Schema({
         required: true,
     },
     adherant: {
-        type: mongoose.Schema.Types.ObjectId, // Assuming Adherants is referenced by ObjectId
-        ref: 'Adherants', // This should match the model name of Adherants
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Adherants',
         required: true,
     },
     beneficiaire: {
-        type: mongoose.Schema.Types.ObjectId, // Assuming Adherants is referenced by ObjectId
-        ref: 'Beneficaires', // This should match the model name of Adherants
+        type: mongoose.Schema.Types.ObjectId,   
+        ref: 'Beneficaires',
         required: true,
     },
     diagnostic: {
-        type: String,
-        required: true,
-    },
-    ordonnance: {
         type: String,
         required: true,
     },

@@ -34,9 +34,49 @@ router.get('/adherants/:id', async (req, res) => {
     }
 });
 
-// CREATE a new adherant
+// CREATE a new adherant with assigining his beneficaires to it and save them to beneficaires collection
 router.post('/adherants', async (req, res) => {
     try {
+    //     const adherantData = req.body;
+    //     const adherant = new Adherants({
+    //         nom: adherantData.nom,
+    //         prenom: adherantData.prenom,
+    //         date_naissance: adherantData.date_naissance,
+    //         sexe: adherantData.sexe,
+    //         date_adhesion: adherantData.date_adhesion,
+    //         adresse: adherantData.adresse,
+    //         vip: adherantData.vip,
+    //         telephone: adherantData.telephone,
+    //         email: adherantData.email,
+    //         situation_familiale: adherantData.situation_familiale,
+    //         situation_adhesion: adherantData.situation_adhesion,
+    //         Benefciaire: [],
+    //     });
+        
+    //     for (const beneficaireData of adherantData.Benefciaire) {
+    //         const beneficaire = new Beneficaires(beneficaireData);
+    //         beneficaire.Adherant = adherant; 
+    //         await beneficaire.save();
+    //         adherant.Benefciaire.push(beneficaire);
+    //     }
+    //     await adherant.save();
+
+
+    //     const adherantResponse = {
+    //         _id: adherant._id,
+    //         nom: adherant.nom,
+    //         prenom: adherant.prenom,            
+    //         Benefciaire: adherant.Benefciaire.map(beneficaire => ({
+    //             _id: beneficaire._id,
+    //             nom: beneficaire.nom,
+    //             prenom: beneficaire.prenom,
+
+    //         })),
+    //     };
+    //     res.json(adherantResponse);
+    // } catch (err) {
+    //     console.log(err);
+    //     res.status(500).json({ error: 'Internal server error' });
         const { email: email,
             nom: nom,
             prenom: prenom,
@@ -93,7 +133,9 @@ router.post('/adherants', async (req, res) => {
     }
 });
 
-// UPDATE an existing adherant by ID
+
+
+// UPDATE an existing adherant by ID 
 router.put('/adherants/:id', async (req, res) => {
     try {
         const updatedAdherant = await Adherants.findByIdAndUpdate(
@@ -102,6 +144,7 @@ router.put('/adherants/:id', async (req, res) => {
             { new: true } // Return the updated adherant
         );
         if (!updatedAdherant) {
+            
             return res.status(404).json({ error: 'Adherant not found' });
         }
         res.json(updatedAdherant);
@@ -110,6 +153,8 @@ router.put('/adherants/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
 
 // DELETE an adherant by ID
 router.delete('/adherants/:id', async (req, res) => {
@@ -157,13 +202,15 @@ router.get('/beneficaires/:id', async (req, res) => {
 router.post('/beneficaires', async (req, res) => {
     try {
         const beneficaire = await Beneficaires.create(req.body);
+        const adherant = await Adherants.findById(beneficaire.Adherant);
+        adherant.Benefciaire.push(beneficaire);
+        await adherant.save();
         res.json(beneficaire);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
-);
+});
 
 // UPDATE an existing beneficaires by ID
 router.put('/beneficaires/:id', async (req, res) => {
@@ -171,7 +218,7 @@ router.put('/beneficaires/:id', async (req, res) => {
         const updatedBeneficaire = await Beneficaires.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true } // Return the updated beneficaire
+            { new: true } 
         );
         if (!updatedBeneficaire) {
             return res.status(404).json({ error: 'Beneficaire not found' });
@@ -245,13 +292,21 @@ router.post('/consultations', async (req, res) => {
         const consultation = req.body;
         const dbConsultation = new Consultation({
             medecin: await User.findById(consultation.medecin),
+            
             date: consultation.date,
             adherant: await Adherants.findById(consultation.adherant),
             beneficiaire: await Beneficaires.findById(consultation.beneficiaire),
             diagnostic: consultation.diagnostic,
-            ordonnance: await Ordonnance.findById(consultation.ordonnance),
         });
-
+        if (medecin.role !== 'medecin') {
+            return res.status(403).json({ error: 'You are not authorized to perform this operation' });
+        }
+        if (adherant === null) {
+            return res.status(404).json({ error: 'Adherant not found' });
+        }
+        if (beneficiaire === null) {
+            return res.status(404).json({ error: 'Beneficiaire not found' });
+        }
         const savedConsultation = await dbConsultation.save();
         res.json(savedConsultation);
     } catch (err) {
@@ -374,7 +429,7 @@ router.get('/medicaments/:id', async (req, res) => {
 // CREATE a new Medicaments
 router.post('/medicaments', async (req, res) => {
     try {
-        const medicaments = await Medicaments.create(req.body);
+        const medicaments = await Medicament.create(req.body);
         res.json(medicaments);
     } catch (err) {
         console.log(err);
@@ -478,17 +533,27 @@ router.get('/ordonnance/:id', async (req, res) => {
     }
 }
 );
-// CREATE a new Ordonnance
+// CREATE a new Ordonnance with assigning the consultation to it
 router.post('/ordonnance', async (req, res) => {
     try {
-        const ordonnance = await Ordonnance.create(req.body);
+        const ordonnanceData = req.body;
+        const ordonnance = new Ordonnance({
+            consultation: ordonnanceData.consultation,
+            commentaire: ordonnanceData.commentaire,
+            duree: ordonnanceData.duree,
+        });
+        for (const medicamentData of ordonnanceData.medicaments) {
+            const medicament = new Medicament(medicamentData);
+            await medicament.save();
+            ordonnance.medicaments.push(medicament);
+        }
+        await ordonnance.save();
         res.json(ordonnance);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
-);
+});
 // UPDATE an existing Ordonnance by ID
 router.put('/ordonnance/:id', async (req, res) => {
     try {
@@ -597,17 +662,26 @@ router.get('/dossier/:id', async (req, res) => {
     }
 }
 );
-// CREATE a new Dossier
+// CREATE a new Dossier with assigning the consultation to it
 router.post('/dossier', async (req, res) => {
     try {
-        const dossier = await Dossier.create(req.body);
-        res.json(dossier);
+        const dossier = req.body;
+        const dbDossier = new Dossier({
+            stats: dossier.stats,
+            numPoloice: dossier.numPoloice,
+            pathologie: dossier.pathologie,
+            consultation: await Consultation.findById(dossier.consultation),
+        });
+
+        const savedDossier = await dbDossier.save();
+        res.json(savedDossier);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 );
+
 
 // UPDATE an existing Dossier by ID
 router.put('/dossier/:id', async (req, res) => {

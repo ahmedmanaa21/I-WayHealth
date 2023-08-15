@@ -13,7 +13,6 @@ const forme = {
     };
 
 const MedicamentSchema = new mongoose.Schema({
-    _id: Number,
     nom: {
         type: String,
         required: true,

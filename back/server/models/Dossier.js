@@ -9,7 +9,6 @@ const pathologie = {
     };
 
 const DossierSchema = new mongoose.Schema({
-    _id: Number,
     stats: {
         type: String,
         required: true,

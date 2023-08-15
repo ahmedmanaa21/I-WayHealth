@@ -65,8 +65,8 @@ const AdherantsSchema = new mongoose.Schema({
     },
     Benefciaire: {
         type: [Beneficaires.schema],
-        default: null,
-    },
+        required: false,
+},
 },
     { timestamps: true }
 );
