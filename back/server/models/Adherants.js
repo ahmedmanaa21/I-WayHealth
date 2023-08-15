@@ -16,7 +16,6 @@ const Situation_adhesion = {
 
 
 const AdherantsSchema = new mongoose.Schema({
-    _id: Number,
     email: {
         type: String,
         required: true,
@@ -66,7 +65,7 @@ const AdherantsSchema = new mongoose.Schema({
     },
     Benefciaire : {
         type: [Beneficaires.schema],
-        default: false,
+        required: false,
 },
 },
     { timestamps: true }

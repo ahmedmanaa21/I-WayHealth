@@ -12,7 +12,6 @@ const Sexe = {
     };
 
 const BeneficairesSchema = new mongoose.Schema({
-    _id: Number,
     nom: {
         type: String,
         required: true,
@@ -34,8 +33,8 @@ const BeneficairesSchema = new mongoose.Schema({
         enum: Object.values(Situation_familiale),
     },
     Adherant: {
-        type: mongoose.Schema.Types.ObjectId, // Assuming Adherants is referenced by ObjectId
-        ref: 'Adherants', // This should match the model name of Adherants
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Adherants', 
         required: true,
     },
     },
