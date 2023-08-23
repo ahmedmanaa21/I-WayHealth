@@ -221,16 +221,17 @@ export default function UserPage() {
       </Helmet>
 
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+      <Card>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2} sx={{ px: 3 }}>
           <Typography variant="h4" gutterBottom>
-            User
+            Users List
           </Typography>
         </Stack>
 
-        <Card>
+        
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2} sx={{ px: 3 }}>
             <Typography variant="subtitle2" noWrap>
-              Filter by Name:
+              Filter by Name :
             </Typography>
             <input type="text" value={filterName} onChange={handleFilterByName} />
           </Stack>
