@@ -20,6 +20,7 @@ export default function SignupForm() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
   const [place, setPlace] = useState('');
+  const [address, setAddress] = useState('');
 
 
 
@@ -65,6 +66,10 @@ export default function SignupForm() {
     setPlace(event.target.value);
   };
 
+  const handleAddressChange = (event) => {
+    setAddress(event.target.value); 
+  };
+
   const handleSignup = async () => {
     try {
       const newUser = {
@@ -78,6 +83,7 @@ export default function SignupForm() {
         password,
         role,
         place,
+        address,
       };
 
       // Make an API request to your signup endpoint
@@ -157,8 +163,13 @@ export default function SignupForm() {
           onChange={handleRoleChange}
           select
         >
-          <MenuItem value="User">User</MenuItem>
-          <MenuItem value="Admin">Admin</MenuItem>
+        <TextField
+          label="Address"
+          value={address}
+          onChange={handleAddressChange}
+        />
+          <MenuItem value="Doctor">Doctor</MenuItem>
+          <MenuItem value="Pharmacist">Pharmacist</MenuItem>
         </TextField>
         <TextField
           label="Place"

@@ -402,7 +402,7 @@ router.get('/consultation/date/:date', async (req, res) => {
 // GET all Medicaments
 router.get('/medicaments', async (req, res) => {
     try {
-        const medicaments = await Medicaments.find();
+        const medicaments = await Medicament.find();
         res.json(medicaments);
     } catch (err) {
         console.log(err);
@@ -414,7 +414,7 @@ router.get('/medicaments', async (req, res) => {
 // GET a specific Medicaments by ID
 router.get('/medicaments/:id', async (req, res) => {
     try {
-        const medicaments = await Medicaments.findById(req.params.id);
+        const medicaments = await Medicament.findById(req.params.id);
         if (!medicaments) {
             return res.status(404).json({ error: 'Medicaments not found' });
         }
@@ -441,7 +441,7 @@ router.post('/medicaments', async (req, res) => {
 // UPDATE an existing Medicaments by ID
 router.put('/medicaments/:id', async (req, res) => {
     try {
-        const updatedMedicaments = await Medicaments.findByIdAndUpdate(
+        const updatedMedicaments = await Medicament.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true } // Return the updated medicaments
@@ -460,7 +460,7 @@ router.put('/medicaments/:id', async (req, res) => {
 // DELETE an Medicaments by ID
 router.delete('/medicaments/:id', async (req, res) => {
     try {
-        const deletedMedicaments = await Medicaments.findByIdAndDelete(req.params.id);
+        const deletedMedicaments = await Medicament.findByIdAndDelete(req.params.id);
         if (!deletedMedicaments) {
             return res.status(404).json({ error: 'Medicaments not found' });
         }
@@ -472,21 +472,10 @@ router.delete('/medicaments/:id', async (req, res) => {
 }
 );
 
-//find medicament by ordonnance
-router.get('/medicaments/ordonnance/:id', async (req, res) => {
-    try {
-        const medicaments = await Medicaments.find({ ordonnance: req.params.id });
-        res.json(medicaments);
-    } catch (err) {
-        console.log(err);
-    }
-}
-);
-
 //find medicament by nom
 router.get('/medicaments/nom/:nom', async (req, res) => {
     try {
-        const medicaments = await Medicaments.find({ nom: req.params.nom });
+        const medicaments = await Medicament.find({ nom: req.params.nom });
         res.json(medicaments);
     } catch (err) {
         console.log(err);
@@ -497,7 +486,7 @@ router.get('/medicaments/nom/:nom', async (req, res) => {
 //find medicament by forme
 router.get('/medicaments/forme/:forme', async (req, res) => {
     try {
-        const medicaments = await Medicaments.find({ forme: req.params.forme });
+        const medicaments = await Medicament.find({ forme: req.params.forme });
         res.json(medicaments);
     } catch (err) {
         console.log(err);
@@ -555,23 +544,52 @@ router.post('/ordonnance', async (req, res) => {
     }
 });
 // UPDATE an existing Ordonnance by ID
+// Update an existing Ordonnance
 router.put('/ordonnance/:id', async (req, res) => {
     try {
-        const updatedOrdonnance = await Ordonnance.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true } // Return the updated ordonnance
-        );
-        if (!updatedOrdonnance) {
-            return res.status(404).json({ error: 'Ordonnance not found' });
+      const ordonnanceId = req.params.id;
+      const updatedOrdonnanceData = req.body;
+  
+      const existingOrdonnance = await Ordonnance.findById(ordonnanceId);
+  
+      if (!existingOrdonnance) {
+        return res.status(404).json({ error: 'Ordonnance not found' });
+      }
+  
+      // Update fields of the existing ordonnance
+      existingOrdonnance.consultation = updatedOrdonnanceData.consultation;
+      existingOrdonnance.commentaire = updatedOrdonnanceData.commentaire;
+      existingOrdonnance.duree = updatedOrdonnanceData.duree;
+
+      for (const medicamentData of updatedOrdonnanceData.medicaments) {
+        if (medicamentData._id) {
+          // Update existing medicament
+          const existingMedicament = await Medicament.findById(medicamentData._id);
+          if (existingMedicament) {
+            existingMedicament.name = medicamentData.name;
+            existingMedicament.description = medicamentData.description;
+            existingMedicament.prix = medicamentData.prix;
+            existingMedicament.forme = medicamentData.forme;
+            await existingMedicament.save();
+            existingOrdonnance.medicaments.push(existingMedicament);
+          }
+        } else {
+          // Create new medicament
+          const newMedicament = new Medicament(medicamentData);
+          await newMedicament.save();
+          existingOrdonnance.medicaments.push(newMedicament);
         }
-        res.json(updatedOrdonnance);
+      }
+  
+      await existingOrdonnance.save();
+  
+      res.json(existingOrdonnance);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
     }
-}
-);
+  });
+  
 
 // DELETE an Ordonnance by ID
 router.delete('/ordonnance/:id', async (req, res) => {
@@ -634,6 +652,22 @@ router.get('/ordonnance/beneficiare/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+//get medicaments of an ordonnance
+
+router.get('/ordonnance/medicaments/:id', async (req, res) => {
+    try {
+        const ordonnance = await Ordonnance.findById(req.params.id);
+        if (!ordonnance) {
+            return res.status(404).json({ error: 'Ordonnance not found' });
+        }
+        res.json(ordonnance.medicaments);
+    } catch (err) {
+        console.log(err);
+    }
+}
+);
+
 
 //Routes for Dossier
 // GET all Dossier
