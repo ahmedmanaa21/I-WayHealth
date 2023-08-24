@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 const forme = {
-    Comprime: "Comprime",
-    Gelule: "Gelule",
-    Sirop: "Sirop",
-    Pommade: "Pommade",
-    Goutte: "Goutte",
-    Suppositoire: "Suppositoire",
+    Tablet: "Tablet",
+    Capsule: "Capsule",
+    Syrup: "Syrup",
+    Ointment: "Ointment",
+    Drop: "Drop",
+    Suppository: "Suppository",
     Spray: "Spray",
     Patch: "Patch",
-    Autre: "Autre",
+    Other: "Other",
     };
 
 const MedicamentSchema = new mongoose.Schema({

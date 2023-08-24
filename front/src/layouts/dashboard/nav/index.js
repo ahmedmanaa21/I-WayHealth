@@ -12,6 +12,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import Logo from '../../../components/logo';
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
+import "./style.css" ;
 //
 import navConfig from './config';
 import { useUserStore , useAuthStore } from "../../../utils/zustand";
