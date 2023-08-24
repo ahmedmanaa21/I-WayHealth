@@ -10,15 +10,15 @@ export default function MedicamentsPage() {
   const [medicaments, setMedicaments] = useState([]);
   const [selectedMedicament, setSelectedMedicament] = useState(null);
   const medicationFormsTranslation = {
-    Comprime: "Tablet",
-    Gelule: "Capsule",
-    Sirop: "Syrup",
-    Pommade: "Ointment",
-    Goutte: "Drop",
-    Suppositoire: "Suppository",
+    Tablet: "Tablet",
+    Capsule: "Capsule",
+    Syrup: "Syrup",
+    Ointment: "Ointment",
+    Drop: "Drop",
+    Suppository: "Suppository",
     Spray: "Spray",
     Patch: "Patch",
-    Autre: "Other",
+    Other: "Other",
   };
 
   const handleNewMedicament = async () => {
@@ -111,7 +111,7 @@ export default function MedicamentsPage() {
     Swal.fire({
       title: 'Update Medicament',
       html: `
-  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
     <div style="display: flex; align-items: center;">
       <label for="nom" style="margin-right: 10px; width: 100px;">Name:</label>
       <input type="text" id="nom" class="swal2-input" value="${medicament.nom}" />
@@ -140,7 +140,7 @@ export default function MedicamentsPage() {
       confirmButtonText: 'Update',
       focusConfirm: false,
       customClass: {
-        popup: 'my-swal-popup',
+        popup: 'myswalpopup',
       },
       preConfirm: () => {
         return {
@@ -246,8 +246,8 @@ export default function MedicamentsPage() {
     <>
       <Helmet>
         <title> Dashboard: Medicaments | Minimal UI </title>
-
       </Helmet>
+      
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
