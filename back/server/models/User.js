@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const Roles = {
     Doctor: "Doctor",
     Pharmacist: "Pharmacist",
-  };
+    User: "User",
+};
 
 const UserSchema = new mongoose.Schema({
     _id: Number,
@@ -43,7 +44,6 @@ const UserSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: true,
     },
     approved: {
         type: Boolean,
