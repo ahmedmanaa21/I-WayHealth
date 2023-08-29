@@ -704,7 +704,7 @@ router.post('/dossier', async (req, res) => {
             stats: dossier.stats,
             numPoloice: dossier.numPoloice,
             pathologie: dossier.pathologie,
-            consultation: await Consultation.findById(dossier.consultation),
+            consultation: dossier.consultation,
         });
 
         const savedDossier = await dbDossier.save();

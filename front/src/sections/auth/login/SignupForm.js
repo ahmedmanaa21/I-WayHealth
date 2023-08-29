@@ -163,11 +163,6 @@ export default function SignupForm() {
           onChange={handleRoleChange}
           select
         >
-        <TextField
-          label="Address"
-          value={address}
-          onChange={handleAddressChange}
-        />
           <MenuItem value="Doctor">Doctor</MenuItem>
           <MenuItem value="Pharmacist">Pharmacist</MenuItem>
         </TextField>
@@ -175,6 +170,11 @@ export default function SignupForm() {
           label="Place"
           value={place}
           onChange={handlePlaceChange}
+        />
+        <TextField
+          label="Address"
+          value={address}
+          onChange={handleAddressChange}
         />
         <Button variant="contained" onClick={handleSignup}>
           Sign Up

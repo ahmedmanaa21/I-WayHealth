@@ -23,12 +23,12 @@ const navConfig = [
   },
   {
     title: 'Medicaments',
-    path: '/dashboard/blog',
+    path: '/dashboard/medicaments',
     icon: icon('ic_blog'),
   },
   {
-    title: 'login',
-    path: '/login',
+    title: 'Reimbursment File',
+    path: '/dashboard/dossier',
     icon: icon('ic_lock'),
   },
   {
