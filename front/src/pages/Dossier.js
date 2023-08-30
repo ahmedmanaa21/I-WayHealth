@@ -43,7 +43,7 @@ export default function DossierPage() {
         });
         return `
           <option key="${consultation._id}" value="${consultation._id}">
-           Consultation: ${consultation.medecin} - ${formattedDate}
+           Consultation: ${consultation.medecin.firstname} ${consultation.medecin.lastname} - ${formattedDate}
           </option>
         `;
       }).join('')}
@@ -120,22 +120,6 @@ export default function DossierPage() {
           <option value="RespiratoryDisease" ${dossier.pathologie === 'RespiratoryDisease' ? 'selected' : ''}>Respiratory Disease</option>
         </select>
       </div>
-      <div style="display: flex; align-items: center;">
-      <select id="consultation" class="swal2-select">
-      ${consultations.map((consultation) => {
-        const formattedDate = new Date(consultation.date).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        return `
-        <option key="${consultation._id}" value="${consultation._id}" ${consultation._id === dossier.consultation ? 'selected' : ''}>
-           Consultation: ${consultation.medecin} - ${formattedDate}
-          </option>
-        `;
-      }).join('')}
-    </select>
-      </div>
     </div>    
       `,
       showCancelButton: true,
@@ -146,7 +130,6 @@ export default function DossierPage() {
           stats: document.querySelector('#stats').value,
           numPoloice: parseInt(document.querySelector('#numPoloice').value, 10),
           pathologie: document.querySelector('#pathologie').value,
-          consultation: document.querySelector('#consultation').value,
         };
       },
     }).then(async (result) => {
@@ -284,7 +267,6 @@ export default function DossierPage() {
                 <Typography variant="body2">Stats: {dossier.stats}</Typography>
                 <Typography variant="body2">Num Police: {dossier.numPoloice}</Typography>
                 <Typography variant="body2">Pathology: {dossier.pathologie}</Typography>
-                <Typography variant="body2">Consultation: {dossier.consultation}</Typography>
                 <Stack direction="row" spacing={2} mt={2}>
                   <Button variant="contained" onClick={() => handleDeleteDossier(dossier._id)}>Delete</Button>
                   <Button variant="contained" onClick={() => handleUpdateDossier(dossier)}>Update</Button>

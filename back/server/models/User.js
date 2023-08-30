@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Roles = {
-    Doctor: "Doctor",
+    medecin: "medecin",
     Pharmacist: "Pharmacist",
   };
 

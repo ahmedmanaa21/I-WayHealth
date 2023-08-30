@@ -1,4 +1,7 @@
 // component
+import { FaFileSignature } from 'react-icons/fa';
+import { MdLocalPharmacy }  from 'react-icons/md';
+import { GiMedicinePills } from 'react-icons/gi';
 import SvgColor from '../../../components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -17,19 +20,19 @@ const navConfig = [
     icon: icon('ic_user'),
   },
   {
-    title: 'product',
-    path: '/dashboard/products',
-    icon: icon('ic_cart'),
-  },
-  {
     title: 'Medicaments',
     path: '/dashboard/medicaments',
-    icon: icon('ic_blog'),
+    icon: <GiMedicinePills/>,
   },
   {
     title: 'Reimbursment File',
     path: '/dashboard/dossier',
-    icon: icon('ic_lock'),
+    icon: <FaFileSignature />,
+  },
+  {
+    title: 'Consultation',
+    path: '/dashboard/consultation',
+    icon: <MdLocalPharmacy />,
   },
   {
     title: 'Not found',

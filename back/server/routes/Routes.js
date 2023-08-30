@@ -292,19 +292,18 @@ router.post('/consultations', async (req, res) => {
         const consultation = req.body;
         const dbConsultation = new Consultation({
             medecin: await User.findById(consultation.medecin),
-            
             date: consultation.date,
             adherant: await Adherants.findById(consultation.adherant),
             beneficiaire: await Beneficaires.findById(consultation.beneficiaire),
             diagnostic: consultation.diagnostic,
         });
-        if (medecin.role !== 'medecin') {
-            return res.status(403).json({ error: 'You are not authorized to perform this operation' });
+        if (dbConsultation.medecin === null) {
+            return res.status(404).json({ error: 'Medecin not found' });
         }
-        if (adherant === null) {
+        if (dbConsultation.adherant === null) {
             return res.status(404).json({ error: 'Adherant not found' });
         }
-        if (beneficiaire === null) {
+        if (dbConsultation.beneficiaire === null) {
             return res.status(404).json({ error: 'Beneficiaire not found' });
         }
         const savedConsultation = await dbConsultation.save();
@@ -318,21 +317,25 @@ router.post('/consultations', async (req, res) => {
 // UPDATE an existing Consultation by ID
 router.put('/consultation/:id', async (req, res) => {
     try {
+        const { medecin,adherant,beneficaire, ...updatedData } = req.body;
+
         const updatedConsultation = await Consultation.findByIdAndUpdate(
             req.params.id,
-            req.body,
-            { new: true } // Return the updated consultation
+            updatedData,
+            { new: true } 
         );
+
         if (!updatedConsultation) {
             return res.status(404).json({ error: 'Consultation not found' });
         }
+
         res.json(updatedConsultation);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
-);
+});
+
 
 // DELETE an Consultation by ID
 router.delete('/consultation/:id', async (req, res) => {
@@ -720,21 +723,25 @@ router.post('/dossier', async (req, res) => {
 // UPDATE an existing Dossier by ID
 router.put('/dossier/:id', async (req, res) => {
     try {
+        // Remove the consultation field from req.body
+        const { consultation, ...updatedDossierData } = req.body;
+
         const updatedDossier = await Dossier.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updatedDossierData, // Pass the updatedDossierData without the consultation field
             { new: true } // Return the updated dossier
         );
+        
         if (!updatedDossier) {
             return res.status(404).json({ error: 'Dossier not found' });
         }
+        
         res.json(updatedDossier);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
-);
+});
 
 // DELETE an Dossier by ID
 router.delete('/dossier/:id', async (req, res) => {

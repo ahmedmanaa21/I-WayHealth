@@ -13,6 +13,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import { useAuthStore } from "./utils/zustand";
 import NewPassword from './pages/page-new-password';
 import DossierPage from './pages/Dossier';
+import ConsultationPage from './pages/Consultation';
 
 export default function Router() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -28,6 +29,7 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'medicaments', element: <MedicamentsPage /> },
         { path: 'dossier', element: <DossierPage /> },
+        { path: 'consultation', element: <ConsultationPage /> },
       ],
     },
     {
