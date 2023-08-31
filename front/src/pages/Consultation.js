@@ -13,6 +13,11 @@ export default function ConsultationPage() {
   const token = localStorage.getItem("token");
   const userr = JSON.parse(localStorage.getItem("user"));
   const user = useAuthStore((state) => state.user);
+  const currentDate = new Date().toISOString().substr(0, 10);
+  const [search, setSearch] = useState("");
+  const [adherantResponse, setAdherantResponse] = useState([]);
+
+
 
 
 
@@ -65,9 +70,9 @@ export default function ConsultationPage() {
             </div>
           </div>
           <div style="display: flex; align-items: center;">
-            <label for="date" style="margin-right: 10px; width: 100px;">Date:</label>
-            <input type="date" id="date" class="swal2-input" />
-          </div>
+          <label for="date" style="margin-right: 10px; width: 100px;">Date:</label>
+          <input type="date" id="date" class="swal2-input" value="${currentDate}" />
+        </div>
           <div style="display: flex; align-items: center;">
             <label for="adherant" style="margin-right: 10px; width: 100px;">Adherant:</label>
             <select id="adherant" class="swal2-select">
@@ -87,18 +92,18 @@ export default function ConsultationPage() {
           </div>
         </div>
       `,
-      didOpen: () => {
-        const adherantSelect = document.querySelector('#adherant');
-        const beneficiaireSelect = document.querySelector('#beneficiaire');
-    
-        adherantSelect.addEventListener('change', () => {
-          const selectedAdherantId = adherantSelect.value;
-          const selectedAdherant = adherants.find(adherant => adherant._id === selectedAdherantId);        
-          beneficiaireSelect.innerHTML = selectedAdherant.Benefciaire.map(beneficiaire => `
+        didOpen: () => {
+          const adherantSelect = document.querySelector('#adherant');
+          const beneficiaireSelect = document.querySelector('#beneficiaire');
+
+          adherantSelect.addEventListener('change', () => {
+            const selectedAdherantId = adherantSelect.value;
+            const selectedAdherant = adherants.find(adherant => adherant._id === selectedAdherantId);
+            beneficiaireSelect.innerHTML = selectedAdherant.Benefciaire.map(beneficiaire => `
             <option value="${beneficiaire._id}">${beneficiaire.nom} ${beneficiaire.prenom}</option>
           `).join('');
-        });
-      },
+          });
+        },
         showCancelButton: true,
         confirmButtonText: 'Submit',
         focusConfirm: false,
@@ -339,6 +344,9 @@ export default function ConsultationPage() {
     fetchConsultations();
   }, []);
 
+
+
+
   return (
     <>
       <Helmet>
@@ -350,6 +358,7 @@ export default function ConsultationPage() {
           <Typography variant="h4" gutterBottom>
             Consultations
           </Typography>
+          
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleNewConsultation}>
             New Consultation
           </Button>
@@ -369,6 +378,8 @@ export default function ConsultationPage() {
                 {/* <Typography variant="body2">Adherant: {consultation.adherant}</Typography>
                 <Typography variant="body2">Beneficiaire: {consultation.beneficiaire}</Typography> */}
                 <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
+                <Typography variant="body2">Adherant: {consultation.adherant.nom} {consultation.adherant.prenom} </Typography>
+                <Typography variant="body2">Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}</Typography>
                 <Stack direction="row" spacing={2} mt={2}>
                   <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>Delete</Button>
                   <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>Update</Button>

@@ -108,7 +108,7 @@ export default function SignupForm() {
         swal('User already exists', 'Please choose a different username', 'error');
       } else {
         // Other error occurred
-        swal('Error', 'Something went wrong. Please try again later', 'error');
+        swal('Error', 'Cin or Email or Username already used', 'error');
       }
     }
   };
@@ -163,7 +163,7 @@ export default function SignupForm() {
           onChange={handleRoleChange}
           select
         >
-          <MenuItem value="Doctor">Doctor</MenuItem>
+          <MenuItem value="medecin">medecin</MenuItem>
           <MenuItem value="Pharmacist">Pharmacist</MenuItem>
         </TextField>
         <TextField

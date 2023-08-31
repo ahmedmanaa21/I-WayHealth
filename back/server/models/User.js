@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema({
     ip: {
         type: [String],
         required: false,
-    },
+    }
 },
     { timestamps: true }
 );
