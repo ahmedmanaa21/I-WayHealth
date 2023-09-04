@@ -271,6 +271,34 @@ router.get('/consultation', async (req, res) => {
 }
 );
 
+// GET a specific Consultation of medecin
+router.get('/consultation', async (req, res) => {
+    try {
+      const { medecin } = req.query;
+      const consultations = await Consultation.find({ 'medecin._id': medecin }); // Assuming 'medecin' field stores the entire doctor object
+  
+      res.json(consultations);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+// get all consultations of a medecin by his id 
+router.get('/consultation/doctor/:doctorId', async (req, res) => {
+    try {
+      const doctorId = req.params.doctorId;
+      
+      // Fetch consultations for the specified doctor ID
+      const consultations = await Consultation.find({ 'medecin._id': doctorId });
+  
+      res.status(200).json(consultations);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching consultations.' });
+    }
+  });
+
 // GET a specific Consultation by ID
 router.get('/consultation/:id', async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { parse } from 'date-fns';
-import { Container, Stack, Typography, Button, Grid } from '@mui/material';
+import { Card, CardContent, Container, Stack, Typography, Button, Grid, Box } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Iconify from '../components/iconify';
@@ -16,10 +16,15 @@ export default function ConsultationPage() {
   const currentDate = new Date().toISOString().substr(0, 10);
   const [search, setSearch] = useState("");
   const [adherantResponse, setAdherantResponse] = useState([]);
-
-
-
-
+  const [medecins, setMedecins] = useState([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+  const [doctorConsultations, setDoctorConsultations] = useState([]);
+  const [showDoctorConsultations, setShowDoctorConsultations] = useState(false);
+  const images = require.context('../utils/profilePictures/', true, /\.(png|jpe?g|gif|svg)$/);
+  const cardStyles = {
+    marginBottom: '16px',
+    marginTop: '16px',
+  };
 
   const handleNewConsultation = async () => {
     try {
@@ -329,21 +334,57 @@ export default function ConsultationPage() {
     });
   };
 
+  const fetchConsultations = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/consultation');
+      if (response.data) {
+        setConsultations(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchMedecins = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/user/find/role/medecin', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setMedecins(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    async function fetchConsultations() {
-      try {
-        const response = await axios.get('http://localhost:3000/api/consultation'); // Adjust the endpoint
-        if (response.data) {
-          setConsultations(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
     fetchConsultations();
+    fetchMedecins();
   }, []);
 
+
+  const handleDoctorSelection = async (doctorId) => {
+    if (showDoctorConsultations) {
+      setShowDoctorConsultations(false);
+      setSelectedDoctorId(null);
+      setDoctorConsultations([]);
+    } else {
+      setSelectedDoctorId(doctorId);
+      try {
+        const response = await axios.get(`http://localhost:3000/api/consultation/doctor/${doctorId}`);
+        if (response.data) {
+          setDoctorConsultations(response.data);
+          setShowDoctorConsultations(true);
+          console.log('Doctor consultations data received:', doctorConsultations);
+        } else {
+          console.log('No consultations data received.');
+        }
+      } catch (error) {
+        console.error('Error fetching doctor consultations:', error);
+      }
+    }
+  };
 
 
 
@@ -355,41 +396,145 @@ export default function ConsultationPage() {
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4" gutterBottom>
-            Consultations
-          </Typography>
-          
+
+          {showDoctorConsultations ? (
+            doctorConsultations.length > 0 ? (
+              // Display the title with doctor's name when there are consultations
+              <Typography variant="h4" gutterBottom>
+                Consultations of {doctorConsultations[0].medecin.firstname} {doctorConsultations[0].medecin.lastname}
+              </Typography>
+            ) : (
+              // Display the title "Consultations" when there are no consultations
+              <Typography variant="h4" gutterBottom>
+                Consultations
+              </Typography>
+            )
+          ) : (
+            // Display the title "Consultations" when there are no consultations
+            <Typography variant="h4" gutterBottom>
+              Consultations
+            </Typography>
+)}
+
+          {showDoctorConsultations ? (
+            <Button variant="contained" onClick={handleDoctorSelection}>Back to doctors list</Button>
+          ) : (
+            null
+          )}
+
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleNewConsultation}>
             New Consultation
           </Button>
         </Stack>
 
         <Grid container spacing={3}>
-          {consultations.map((consultation) => (
-            <Grid item xs={12} sm={6} md={4} key={consultation._id}>
-              <div style={{ border: '1px solid #ccc', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <img
-                  src={img}
-                  alt="Dossier"
-                  style={{ maxWidth: '50%', height: 'auto' }}
-                />
-                <Typography variant="h6">Medecin: {consultation.medecin.firstname} {consultation.medecin.lastname}</Typography>
-                <Typography variant="body2">Date: {new Date(consultation.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</Typography>
-                {/* <Typography variant="body2">Adherant: {consultation.adherant}</Typography>
-                <Typography variant="body2">Beneficiaire: {consultation.beneficiaire}</Typography> */}
-                <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
-                <Typography variant="body2">Adherant: {consultation.adherant.nom} {consultation.adherant.prenom} </Typography>
-                <Typography variant="body2">Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}</Typography>
-                <Stack direction="row" spacing={2} mt={2}>
-                  <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>Delete</Button>
-                  <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>Update</Button>
-                </Stack>
-              </div>
-            </Grid>
-          ))}
+          {showDoctorConsultations ? (
+            doctorConsultations.length > 0 ? (
+              doctorConsultations.map((consultation) => (
+                <Grid item xs={12} sm={6} md={4} key={consultation._id}>
+                  <Card variant="outlined" style={cardStyles}>
+                    <CardContent>
+                      {consultation.medecin ? (
+                        <>
+                          <Typography variant="h6">
+                            Medecin: {consultation.medecin.firstname} {consultation.medecin.lastname}
+                          </Typography>
+                          <Typography variant="body2">
+                            Date: {new Date(consultation.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          </Typography>
+                          <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
+                          <Typography variant="body2">Adherant: {consultation.adherant.nom} {consultation.adherant.prenom}</Typography>
+                          <Typography variant="body2">Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}</Typography>
+                        </>
+                      ) : (
+                        <Typography variant="body2">This consultation is missing doctor information.</Typography>
+                      )}
+                      <Stack direction="row" spacing={2} mt={2}>
+                        <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>Delete</Button>
+                        <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>Update</Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Typography variant="body2">This doctor has no consultations.</Typography>
+              </Grid>
+            )
+          ) : (
+            userr.role === 'Pharmacist' ? (
+              medecins.map((medecin) => (
+                <Grid item xs={12} sm={6} md={4} key={medecin._id}>
+                  <div
+                    style={{
+                      border: '1px solid #ccc',
+                      padding: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <img
+                      src={images(`./${medecin.image}`)}
+                      alt={`Doctor ${medecin.firstname} ${medecin.lastname}`}
+                      style={{ width: '150px', height: '150px', margin: 'auto' }}
+                    />
+                    <Typography variant="h6">
+                      Doctor: {medecin.firstname} {medecin.lastname}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleDoctorSelection(medecin._id)}
+                    >
+                      View Consultations
+                    </Button>
+                  </div>
+                </Grid>
+              ))
+            ) : (
+              // If the user's role is "Medecin," render their consultations only
+              consultations
+                .filter((consultation) => consultation.medecin._id === userr._id)
+                .map((consultation) => (
+                  <Grid item xs={12} sm={6} md={4} key={consultation._id}>
+                    <div
+                      style={{
+                        border: '1px solid #ccc',
+                        padding: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <img src={img} alt="Dossier" style={{ maxWidth: '50%', height: 'auto' }} />
+                      <Typography variant="h6">
+                        Medecin: {consultation.medecin.firstname} {consultation.medecin.lastname}
+                      </Typography>
+                      <Typography variant="body2">
+                        Date: {new Date(consultation.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </Typography>
+                      <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
+                      <Typography variant="body2">
+                        Adherant: {consultation.adherant.nom} {consultation.adherant.prenom}
+                      </Typography>
+                      <Typography variant="body2">
+                        Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}
+                      </Typography>
+                      <Stack direction="row" spacing={2} mt={2}>
+                        <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>
+                          Delete
+                        </Button>
+                        <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>
+                          Update
+                        </Button>
+                      </Stack>
+                    </div>
+                  </Grid>
+                ))
+            )
+          )}
         </Grid>
-
-
       </Container>
     </>
   );
