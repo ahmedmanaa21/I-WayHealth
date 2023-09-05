@@ -1,5 +1,8 @@
 // component
+import { FaHospitalUser } from 'react-icons/fa'
 import SvgColor from '../../../components/svg-color';
+
+
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +23,12 @@ const navConfig = [
     title: 'product',
     path: '/dashboard/products',
     icon: icon('ic_cart'),
+  },
+
+  {
+    title: 'Adherents',
+    path: '/dashboard/Adherents',
+    icon: <FaHospitalUser />,
   },
   {
     title: 'Medicaments',

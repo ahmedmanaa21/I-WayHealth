@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Adherants = require("./Adherants").default;
-
+;
 const Situation_familiale = {
     Wife: "Wife",
     Child: "Child",

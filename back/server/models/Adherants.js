@@ -71,6 +71,9 @@ const AdherantsSchema = new mongoose.Schema({
     { timestamps: true }
 );
 
+
+
+
 const Adherants = mongoose.model("Adherants", AdherantsSchema);
 module.exports = Adherants;
 

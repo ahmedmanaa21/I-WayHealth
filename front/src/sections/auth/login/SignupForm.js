@@ -163,14 +163,15 @@ export default function SignupForm() {
           onChange={handleRoleChange}
           select
         >
+        
+          <MenuItem value="Doctor">Doctor</MenuItem>
+          <MenuItem value="Pharmacist">Pharmacist</MenuItem>
+        </TextField>
         <TextField
           label="Address"
           value={address}
           onChange={handleAddressChange}
         />
-          <MenuItem value="Doctor">Doctor</MenuItem>
-          <MenuItem value="Pharmacist">Pharmacist</MenuItem>
-        </TextField>
         <TextField
           label="Place"
           value={place}

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./User");
-const Adherants = require("./Adherants").default;
+const Adherants = require("./Adherants");
 const Beneficaires = require("./Beneficaires");
 const Ordonnance = require("./ordonnance");
 

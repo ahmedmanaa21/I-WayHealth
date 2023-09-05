@@ -1,29 +1,29 @@
 const mongoose = require("mongoose");
-const Consultation = require("./consultation");
- 
+const Consultation = require("./Consultation");
+
 const pathologie = {
     Cancer: "Cancer",
     HeartDisease: "HeartDisease",
     ChronicDisease: "ChronicDisease",
     RespiratoryDisease: "RespiratoryDisease",
-    };
+};
 
 const DossierSchema = new mongoose.Schema({
     stats: {
         type: String,
         required: true,
     },
-    numPoloice : {
+    numPoloice: {
         type: Number,
         required: true,
     },
-    pathologie : {
+    pathologie: {
         type: String,
         enum: Object.values(pathologie),
     },
     consultation: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Consultation', 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Consultation',
         required: true,
     },
 
@@ -34,5 +34,4 @@ const DossierSchema = new mongoose.Schema({
 const Dossier = mongoose.model("Dossier", DossierSchema);
 module.exports = Dossier;
 
-    
-    
+

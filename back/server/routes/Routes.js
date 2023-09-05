@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const Adherants = require("../models/Adherants").default;
+const Adherants = require("../models/Adherants");
 const Beneficaires = require("../models/Beneficaires");
 const Consultation = require("../models/Consultation");
 const Dossier = require("../models/Dossier");
@@ -159,6 +159,13 @@ router.put('/adherants/:id', async (req, res) => {
 // DELETE an adherant by ID
 router.delete('/adherants/:id', async (req, res) => {
     try {
+        const Adherant = await Adherants.findById(req.params.id);
+        for (const beneficaireData of Adherant.Benefciaire) {
+            if (beneficaireData) {
+                await Beneficaires.findByIdAndDelete(beneficaireData._id);
+            }
+        }
+
         const deletedAdherant = await Adherants.findByIdAndDelete(req.params.id);
         if (!deletedAdherant) {
             return res.status(404).json({ error: 'Adherant not found' });
