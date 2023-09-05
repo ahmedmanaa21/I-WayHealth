@@ -22,11 +22,11 @@ const ConsultationSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    },
+},
     { timestamps: true }
 );
 
 
 const Consultation = mongoose.model("Consultation", ConsultationSchema);
-module.exports = Consultation ;
+module.exports = Consultation;
 

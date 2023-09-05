@@ -65,10 +65,13 @@ const AdherantsSchema = new mongoose.Schema({
     Benefciaire: {
         type: [Beneficaires.schema],
         required: false,
-},
+    },
 },
     { timestamps: true }
 );
+
+
+
 
 const Adherants = mongoose.model("Adherants", AdherantsSchema);
 module.exports = Adherants;

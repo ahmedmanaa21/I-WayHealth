@@ -14,6 +14,8 @@ import { useAuthStore } from "./utils/zustand";
 import NewPassword from './pages/page-new-password';
 import DossierPage from './pages/Dossier';
 import ConsultationPage from './pages/Consultation';
+import AdherentsPage from './pages/Adherents';
+import AdherentDetaisPage from './components/Adherents/AdherentPage';
 
 export default function Router() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -30,23 +32,29 @@ export default function Router() {
         { path: 'medicaments', element: <MedicamentsPage /> },
         { path: 'dossier', element: <DossierPage /> },
         { path: 'consultation', element: <ConsultationPage /> },
+        { path: 'Adherents', element: <AdherentsPage /> },
+        { path: 'Adherents/:AdherentID', element: <AdherentDetaisPage /> },
+
       ],
     },
+
+
+
     {
       path: 'login',
       element: isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />,
     },
     {
       path: 'signup',
-      element: isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage />, 
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage />,
     },
     {
       path: 'ForgotPassword',
-      element: isAuthenticated ? <Navigate to="/dashboard" /> : <ForgotPassword />, 
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <ForgotPassword />,
     },
     {
       path: 'page-new-password',
-      element: isAuthenticated ? <Navigate to="/dashboard" /> : <NewPassword />, 
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <NewPassword />,
     },
     {
       element: <SimpleLayout />,
