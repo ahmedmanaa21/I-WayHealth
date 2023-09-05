@@ -6,23 +6,17 @@ const Ordonnance = require("./ordonnance");
 
 const ConsultationSchema = new mongoose.Schema({
     medecin: {
-        type: mongoose.Schema.Types.Number,
-        ref: 'User',
-        required: true,
+        type : User.schema,
     },
     date: {
         type: Date,
         required: true,
     },
     adherant: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Adherants',
-        required: true,
+        type: Adherants.schema,
     },
     beneficiaire: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Beneficaires',
-        required: true,
+        type: Beneficaires.schema,
     },
     diagnostic: {
         type: String,

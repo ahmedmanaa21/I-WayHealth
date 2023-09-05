@@ -19,7 +19,6 @@ const AdherantsSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
     },
     nom: {
         type: String,

@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
-import BlogPage from './pages/BlogPage';
+import MedicamentsPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
@@ -12,6 +12,8 @@ import SignupPage from './pages/SignupPage';
 import ForgotPassword from './pages/ForgotPassword';
 import { useAuthStore } from "./utils/zustand";
 import NewPassword from './pages/page-new-password';
+import DossierPage from './pages/Dossier';
+import ConsultationPage from './pages/Consultation';
 import AdherentsPage from './pages/Adherents';
 import AdherentDetaisPage from './components/Adherents/AdherentPage';
 
@@ -27,8 +29,10 @@ export default function Router() {
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
+        { path: 'medicaments', element: <MedicamentsPage /> },
+        { path: 'dossier', element: <DossierPage /> },
+        { path: 'consultation', element: <ConsultationPage /> },
         { path: 'Adherents', element: <AdherentsPage /> },
-        { path: 'blog', element: <BlogPage /> },
         { path: 'Adherents/:AdherentID', element: <AdherentDetaisPage /> },
 
       ],

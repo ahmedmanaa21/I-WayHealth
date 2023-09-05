@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Roles = {
-    Doctor: "Doctor",
+    medecin: "medecin",
     Pharmacist: "Pharmacist",
     User: "User",
 };
@@ -11,7 +11,6 @@ const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true,
     },
     firstname: {
         type: String,
@@ -52,7 +51,7 @@ const UserSchema = new mongoose.Schema({
     ip: {
         type: [String],
         required: false,
-    },
+    }
 },
     { timestamps: true }
 );

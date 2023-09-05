@@ -271,7 +271,7 @@ router.get('/find/address/:address', verifyToken, async (req, res) => {
 });
 
 //find users by role
-router.get('/find/role/:role', verifyToken, async (req, res) => {
+router.get('/find/role/:role', verifyToken ,  async (req, res) => {
   try {
     const role = req.params.role;
     const foundUsers = await User.find({ role });
@@ -285,5 +285,6 @@ router.get('/find/role/:role', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 module.exports = router;
