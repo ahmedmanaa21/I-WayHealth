@@ -329,7 +329,7 @@ router.post('/consultations', async (req, res) => {
             medecin: await User.findById(consultation.medecin),
             date: consultation.date,
             adherant: await Adherants.findById(consultation.adherant),
-            beneficiaire: await Beneficaires.findById(consultation.beneficiaire),
+            beneficiaire: consultation.beneficiaire ? await Beneficaires.findById(consultation.beneficiaire) : null,
             diagnostic: consultation.diagnostic,
         });
         if (dbConsultation.medecin === null) {
@@ -337,9 +337,6 @@ router.post('/consultations', async (req, res) => {
         }
         if (dbConsultation.adherant === null) {
             return res.status(404).json({ error: 'Adherant not found' });
-        }
-        if (dbConsultation.beneficiaire === null) {
-            return res.status(404).json({ error: 'Beneficiaire not found' });
         }
         const savedConsultation = await dbConsultation.save();
         res.json(savedConsultation);

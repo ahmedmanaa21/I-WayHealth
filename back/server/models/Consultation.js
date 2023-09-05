@@ -17,6 +17,7 @@ const ConsultationSchema = new mongoose.Schema({
     },
     beneficiaire: {
         type: Beneficaires.schema,
+        required: false,
     },
     diagnostic: {
         type: String,
