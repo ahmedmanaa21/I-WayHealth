@@ -247,7 +247,7 @@ export default function MedicamentsPage() {
       <Helmet>
         <title> Dashboard: Medicaments | Minimal UI </title>
       </Helmet>
-      
+
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const Adherants = require("./Adherants");
-
+const Adherants = require("./Adherants").default;
+;
 const Situation_familiale = {
     Wife: "Wife",
     Child: "Child",
@@ -34,7 +34,7 @@ const BeneficairesSchema = new mongoose.Schema({
     },
     Adherant: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Adherants', 
+        ref: 'Adherants',
         required: true,
     },
 },

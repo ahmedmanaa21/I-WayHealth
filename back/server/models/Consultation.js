@@ -6,8 +6,8 @@ const Ordonnance = require("./ordonnance");
 
 const ConsultationSchema = new mongoose.Schema({
     medecin: {
-        type: mongoose.Schema.Types.Number, 
-        ref: 'User', 
+        type: mongoose.Schema.Types.Number,
+        ref: 'User',
         required: true,
     },
     date: {
@@ -20,7 +20,7 @@ const ConsultationSchema = new mongoose.Schema({
         required: true,
     },
     beneficiaire: {
-        type: mongoose.Schema.Types.ObjectId,   
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Beneficaires',
         required: true,
     },
@@ -28,11 +28,11 @@ const ConsultationSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    },
+},
     { timestamps: true }
 );
 
 
 const Consultation = mongoose.model("Consultation", ConsultationSchema);
-module.exports = Consultation ;
+module.exports = Consultation;
 
