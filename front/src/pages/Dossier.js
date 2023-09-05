@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Container, Stack, Typography, Button, Grid } from '@mui/material';
+import { Container, Stack, Typography, Button, Grid , TextField } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Iconify from '../components/iconify';
@@ -10,6 +10,8 @@ export default function DossierPage() {
   const [dossiers, setDossiers] = useState([]);
   const [selectedDossier, setSelectedDossier] = useState(null);
   const [consultations, setConsultations] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
 
 
   const handleNewDossier = async () => {
@@ -238,6 +240,17 @@ export default function DossierPage() {
     fetchConsultations();
   }, []);
 
+
+  const filteredDossiers = dossiers.filter((dossier) => {
+    const numMatch = dossier.numPoloice.toString().toLowerCase().includes(searchQuery.toLowerCase());
+    const pathologieMatch = dossier.pathologie.toLowerCase().includes(searchQuery.toLowerCase());
+    return numMatch || pathologieMatch;
+  });
+
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
   return (
     <>
       <Helmet>
@@ -254,8 +267,17 @@ export default function DossierPage() {
           </Button>
         </Stack>
 
+        <Stack  alignItems="center" mb={5} sx={{ px: 5 }}>
+          <TextField
+            label="Search by Police N°"
+            variant="outlined"
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+          />
+        </Stack>
+
         <Grid container spacing={3}>
-          {dossiers.map((dossier) => (
+          {filteredDossiers.map((dossier) => (
             <Grid item xs={12} sm={6} md={4} key={dossier._id}>
               <div style={{ border: '1px solid #ccc', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <img

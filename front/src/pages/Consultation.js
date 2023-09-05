@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { parse } from 'date-fns';
-import { Card, CardContent, Container, Stack, Typography, Button, Grid, Box } from '@mui/material';
+import { Card, CardContent, Container, Stack, Typography, Button, Grid, Box, TextField } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Iconify from '../components/iconify';
@@ -20,6 +20,10 @@ export default function ConsultationPage() {
   const [selectedDoctorId, setSelectedDoctorId] = useState(null);
   const [doctorConsultations, setDoctorConsultations] = useState([]);
   const [showDoctorConsultations, setShowDoctorConsultations] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQueryDoctor, setSearchQueryDoctor] = useState('');
+
+
   const images = require.context('../utils/profilePictures/', true, /\.(png|jpe?g|gif|svg)$/);
   const cardStyles = {
     marginBottom: '16px',
@@ -376,14 +380,41 @@ export default function ConsultationPage() {
         if (response.data) {
           setDoctorConsultations(response.data);
           setShowDoctorConsultations(true);
-          console.log('Doctor consultations data received:', doctorConsultations);
+          console.log();
         } else {
-          console.log('No consultations data received.');
+          console.log();
         }
       } catch (error) {
         console.error('Error fetching doctor consultations:', error);
       }
     }
+  };
+
+  const filteredConsultations = consultations.filter((consultation) => {
+    const fullName = `${consultation.adherant.nom} ${consultation.adherant.prenom}`;
+    const adherantName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    const beneficiaireFullName = `${consultation.beneficiaire.nom} ${consultation.beneficiaire.prenom}`;
+    const beneficiaireName = beneficiaireFullName.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    const doctorFullName = `${consultation.medecin.firstname} ${consultation.medecin.lastname}`;
+    const doctorName = doctorFullName.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    // Return true if any of the conditions match
+    return adherantName || beneficiaireName || doctorName;
+  });
+  
+  const filteredMedecins = medecins.filter((medecin) => {
+    const fullName = `${medecin.firstname} ${medecin.lastname}`;
+    const doctorFullName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    // Return true if the condition matches
+    return doctorFullName;
+  });
+  
+
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
 
@@ -414,7 +445,7 @@ export default function ConsultationPage() {
             <Typography variant="h4" gutterBottom>
               Consultations
             </Typography>
-)}
+          )}
 
           {showDoctorConsultations ? (
             <Button variant="contained" onClick={handleDoctorSelection}>Back to doctors list</Button>
@@ -427,6 +458,29 @@ export default function ConsultationPage() {
           </Button>
         </Stack>
 
+
+
+        {showDoctorConsultations ? (
+          <Stack alignItems="center" mb={5} sx={{ px: 5 }}>
+            <TextField
+              label="Search by Names"
+              variant="outlined"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+            />
+          </Stack>
+        ) : (
+          <Stack alignItems="center" mb={5} sx={{ px: 5 }}>
+            <TextField
+              label="Search by Names"
+              variant="outlined"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+            />
+          </Stack>
+        )}
+
+
         <Grid container spacing={3}>
           {showDoctorConsultations ? (
             doctorConsultations.length > 0 ? (
@@ -436,6 +490,8 @@ export default function ConsultationPage() {
                     <CardContent>
                       {consultation.medecin ? (
                         <>
+
+                          <img src={img} alt="Dossier" style={{ maxWidth: '50%', height: 'auto' }} />
                           <Typography variant="h6">
                             Medecin: {consultation.medecin.firstname} {consultation.medecin.lastname}
                           </Typography>
@@ -464,7 +520,7 @@ export default function ConsultationPage() {
             )
           ) : (
             userr.role === 'Pharmacist' ? (
-              medecins.map((medecin) => (
+              filteredMedecins.map((medecin) => (
                 <Grid item xs={12} sm={6} md={4} key={medecin._id}>
                   <div
                     style={{
@@ -494,7 +550,8 @@ export default function ConsultationPage() {
               ))
             ) : (
               // If the user's role is "Medecin," render their consultations only
-              consultations
+
+              filteredConsultations
                 .filter((consultation) => consultation.medecin._id === userr._id)
                 .map((consultation) => (
                   <Grid item xs={12} sm={6} md={4} key={consultation._id}>

@@ -9,6 +9,12 @@ import img from "../utils/medicaments.jpg";
 export default function MedicamentsPage() {
   const [medicaments, setMedicaments] = useState([]);
   const [selectedMedicament, setSelectedMedicament] = useState(null);
+  const [filterName, setFilterName] = useState('');
+  const [filterForm, setFilterForm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+
+
   const medicationFormsTranslation = {
     Tablet: "Tablet",
     Capsule: "Capsule",
@@ -242,12 +248,22 @@ export default function MedicamentsPage() {
     fetchMedicaments();
   }, []); // The empty dependency array ensures the effect runs only once
 
+  const filteredMedicaments = medicaments.filter((medicament) => {
+    const nameMatch = medicament.nom.toLowerCase().includes(searchQuery.toLowerCase());
+    const formMatch = medicament.forme.toLowerCase().includes(searchQuery.toLowerCase());
+    return nameMatch || formMatch;
+  });
+
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
   return (
     <>
       <Helmet>
         <title> Dashboard: Medicaments | Minimal UI </title>
       </Helmet>
-      
+
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -259,8 +275,18 @@ export default function MedicamentsPage() {
           </Button>
         </Stack>
 
+        <Stack  alignItems="center" mb={5} sx={{ px: 5 }}>
+          <TextField
+            label="Search by Name and Form"
+            variant="outlined"
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+          />
+        </Stack>
+
+
         <Grid container spacing={3}>
-          {medicaments.map((medicament) => (
+          {filteredMedicaments.map((medicament) => (
             <Grid item xs={12} sm={6} md={4} key={medicament._id}>
               <div style={{ border: '1px solid #ccc', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <img
