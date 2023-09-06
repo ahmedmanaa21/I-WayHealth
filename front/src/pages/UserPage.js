@@ -22,6 +22,7 @@ import {
   TableContainer,
   TablePagination,
   TableHead,
+  TextField,
 } from '@mui/material';
 import Iconify from '../components/iconify';
 import { useUserStore, useAuthStore } from "../utils/zustand";
@@ -229,11 +230,17 @@ export default function UserPage() {
         </Stack>
 
         
+         
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2} sx={{ px: 3 }}>
-            <Typography variant="subtitle2" noWrap>
+          <Typography variant="subtitle2" noWrap>
               Filter by Name :
             </Typography>
-            <input type="text" value={filterName} onChange={handleFilterByName} />
+            <TextField
+              label="Search by Names"
+              variant="outlined"
+              value={filterName}
+              onChange={handleFilterByName}
+            />
           </Stack>
 
           <TableContainer>

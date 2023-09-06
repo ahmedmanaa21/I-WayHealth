@@ -281,30 +281,30 @@ router.get('/consultation', async (req, res) => {
 // GET a specific Consultation of medecin
 router.get('/consultation', async (req, res) => {
     try {
-      const { medecin } = req.query;
-      const consultations = await Consultation.find({ 'medecin._id': medecin }); // Assuming 'medecin' field stores the entire doctor object
-  
-      res.json(consultations);
+        const { medecin } = req.query;
+        const consultations = await Consultation.find({ 'medecin._id': medecin }); // Assuming 'medecin' field stores the entire doctor object
+
+        res.json(consultations);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 // get all consultations of a medecin by his id 
 router.get('/consultation/doctor/:doctorId', async (req, res) => {
     try {
-      const doctorId = req.params.doctorId;
-      
-      // Fetch consultations for the specified doctor ID
-      const consultations = await Consultation.find({ 'medecin._id': doctorId });
-  
-      res.status(200).json(consultations);
+        const doctorId = req.params.doctorId;
+
+        // Fetch consultations for the specified doctor ID
+        const consultations = await Consultation.find({ 'medecin._id': doctorId });
+
+        res.status(200).json(consultations);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching consultations.' });
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching consultations.' });
     }
-  });
+});
 
 // GET a specific Consultation by ID
 router.get('/consultation/:id', async (req, res) => {
@@ -349,12 +349,12 @@ router.post('/consultations', async (req, res) => {
 // UPDATE an existing Consultation by ID
 router.put('/consultation/:id', async (req, res) => {
     try {
-        const { medecin,adherant,beneficaire, ...updatedData } = req.body;
+        const { medecin, adherant, beneficaire, ...updatedData } = req.body;
 
         const updatedConsultation = await Consultation.findByIdAndUpdate(
             req.params.id,
             updatedData,
-            { new: true } 
+            { new: true }
         );
 
         if (!updatedConsultation) {
@@ -561,23 +561,54 @@ router.get('/ordonnance/:id', async (req, res) => {
 router.post('/ordonnance', async (req, res) => {
     try {
         const ordonnanceData = req.body;
+
+        // Check if the consultation already has an ordonnance
+        const existingOrdonnance = await Ordonnance.findOne({ consultation: ordonnanceData.consultation });
+
+        if (existingOrdonnance) {
+            return res.status(400).json({ error: 'Consultation already has an prescription' });
+        }
+
+        const medicamentIds = ordonnanceData.medicaments;
+        const medicamentsList = await Promise.all(
+            medicamentIds.map(async (medicamentId) => {
+                const medicament = await Medicament.findById(medicamentId);
+                if (!medicament) {
+                    throw new Error(`Medicament not found for ID: ${medicamentId}`);
+                }
+                return medicament;
+            })
+        );
+
         const ordonnance = new Ordonnance({
-            consultation: ordonnanceData.consultation,
+            consultation: await Consultation.findById(ordonnanceData.consultation),
             commentaire: ordonnanceData.commentaire,
             duree: ordonnanceData.duree,
+            medicaments: medicamentsList,
         });
-        for (const medicamentData of ordonnanceData.medicaments) {
-            const medicament = new Medicament(medicamentData);
-            await medicament.save();
-            ordonnance.medicaments.push(medicament);
-        }
+
         await ordonnance.save();
-        res.json(ordonnance);
+
+        const consultationId = ordonnanceData.consultation;
+        const consultation = await Consultation.findByIdAndUpdate(
+            consultationId,
+            { ordonnance: ordonnance },
+            { new: true }
+        );
+
+        if (!consultation) {
+            return res.status(404).json({ error: 'Consultation not found' });
+        }
+
+        res.json(consultation);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
+
 // UPDATE an existing Ordonnance by ID
 // Update an existing Ordonnance
 router.put('/ordonnance/:id', async (req, res) => {
@@ -763,11 +794,11 @@ router.put('/dossier/:id', async (req, res) => {
             updatedDossierData, // Pass the updatedDossierData without the consultation field
             { new: true } // Return the updated dossier
         );
-        
+
         if (!updatedDossier) {
             return res.status(404).json({ error: 'Dossier not found' });
         }
-        
+
         res.json(updatedDossier);
     } catch (err) {
         console.log(err);

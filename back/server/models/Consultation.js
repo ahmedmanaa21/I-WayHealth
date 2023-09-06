@@ -23,6 +23,9 @@ const ConsultationSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    ordonnance: {
+        type: Ordonnance.schema,
+    },
 },
     { timestamps: true }
 );

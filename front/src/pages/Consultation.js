@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BsClipboard2Plus } from 'react-icons/bs';
 import { Helmet } from 'react-helmet-async';
 import { parse } from 'date-fns';
 import { Card, CardContent, Container, Stack, Typography, Button, Grid, Box, TextField } from '@mui/material';
@@ -391,6 +392,127 @@ export default function ConsultationPage() {
     }
   };
 
+  const checkOrdonnanceStatus = async (consultationId) => {
+    try {
+      const consultation = await axios.get(`http://localhost:3000/api/consultation/${consultationId}`);
+      if (consultation.data.ordonnance) {
+        Swal.fire({
+          title: 'Ordonnance Already Exists',
+          text: 'This consultation already has an ordonnance.',
+          icon: 'info',
+        });
+      } else {
+        // If the consultation does not have an ordonnance, proceed to create one
+        createOrdonnance(consultationId);
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred while checking the ordonnance status',
+        icon: 'error',
+      });
+    }
+  };
+  
+  // Function to create a new ordonnance
+  const createOrdonnance = async (consultationId) => {
+    try {
+      // Fetch medicaments data from your API
+      const responseMedicaments = await axios.get('http://localhost:3000/api/medicaments');
+      const medicaments = responseMedicaments.data;
+  
+      Swal.fire({
+        title: 'New Ordonnance',
+        html:`
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center;">
+            <label for="commentaire" style="margin-right: 10px; width: 100px;">Commentaire:</label>
+            <input type="text" id="commentaire" class="swal2-input" />
+          </div>
+          <div style="display: flex; align-items: center;">
+            <label for="duree" style="margin-right: 10px; width: 100px;">Duree:</label>
+            <input type="number" id="duree" class="swal2-input" />
+          </div>
+          <div style="display: flex; align-items: center;">
+            <label for="medicaments" style="margin-right: 10px; width: 100px;">Medicaments:</label>
+            <select id="medicaments" class="swal2-select" multiple>
+              ${medicaments.map((medicament) => `
+                <option value="${medicament._id}">${medicament.nom}</option>
+              `).join('')}
+            </select>
+          </div>
+        </div>
+      `,
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        focusConfirm: false,
+        preConfirm: () => {
+          return {
+            consultation: consultationId,
+            commentaire: document.querySelector('#commentaire').value,
+            duree: parseInt(document.querySelector('#duree').value, 10),
+            medicaments: Array.from(document.querySelector('#medicaments').selectedOptions).map(option => option.value),
+          };
+        },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const newOrdonnanceData = { ...result.value };
+          try {
+            const response = await axios.post('http://localhost:3000/api/ordonnance', newOrdonnanceData, {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+  
+            if (response.data) {
+              Swal.fire({
+                title: 'Success',
+                text: 'New Ordonnance has been added',
+                icon: 'success',
+              });
+            } else {
+              Swal.fire({
+                title: 'Error',
+                text: 'Failed to add new Ordonnance',
+                icon: 'error',
+              });
+            }
+          } catch (error) {
+            console.error(error);
+            if (error.response && error.response.status === 400 && error.response.data.error === 'Consultation already has an prescription') {
+              Swal.fire({
+                title: 'Error',
+                text: 'Consultation already has an ordonnance',
+                icon: 'error',
+              });
+            } else {
+              Swal.fire({
+                title: 'Error',
+                text: 'Consultation already has an prescription',
+                icon: 'error',
+              });
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred while fetching medicaments',
+        icon: 'error',
+      });
+    }
+  };
+  
+
+  const handleNewOrdonnance = async (idConsultation) => {
+    checkOrdonnanceStatus(idConsultation);
+  };
+  
+
+
   const filteredConsultations = consultations.filter((consultation) => {
     const fullName = `${consultation.adherant.nom} ${consultation.adherant.prenom}`;
     const adherantName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -492,35 +614,42 @@ export default function ConsultationPage() {
             doctorConsultations.length > 0 ? (
               doctorConsultations.map((consultation) => (
                 <Grid item xs={12} sm={6} md={4} key={consultation._id}>
-                  <Card variant="outlined" style={cardStyles}>
-                    <CardContent>
-                      {consultation.medecin ? (
-                        <>
-
-                          <img src={img} alt="Dossier" style={{ maxWidth: '50%', height: 'auto' }} />
-                          <Typography variant="h6">
-                            Medecin: {consultation.medecin.firstname} {consultation.medecin.lastname}
-                          </Typography>
-                          <Typography variant="body2">
-                            Date: {new Date(consultation.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                          </Typography>
-                          <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
-                          <Typography variant="body2">Adherant: {consultation.adherant.nom} {consultation.adherant.prenom}</Typography>
-                          {consultation.beneficiaire ? (
-                        <Typography variant="body2">
-                          Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}
-                        </Typography>
-                      ) : null}                        </>
-                      ) : (
-                        <Typography variant="body2">This consultation is missing doctor information.</Typography>
-                      )}
-                      <Stack direction="row" spacing={2} mt={2}>
-                        <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>Delete</Button>
-                        <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>Update</Button>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <div
+                  style={{
+                    border: '1px solid #ccc',
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <img src={img} alt="Dossier" style={{ maxWidth: '50%', height: 'auto' }} />
+                  <Typography variant="h6">
+                    Medecin: {consultation.medecin.firstname} {consultation.medecin.lastname}
+                  </Typography>
+                  <Typography variant="body2">
+                    Date: {new Date(consultation.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </Typography>
+                  <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
+                  <Typography variant="body2">
+                    Adherant: {consultation.adherant.nom} {consultation.adherant.prenom}
+                  </Typography>
+                  {consultation.beneficiaire ? (
+                    <Typography variant="body2">
+                      Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}
+                    </Typography>
+                  ) : null}
+                  <Stack direction="row" spacing={2} mt={2}>
+                    <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>
+                      Delete
+                    </Button>
+                    <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>
+                      Update
+                    </Button>
+                    <Button variant="contained" onClick={() => handleNewOrdonnance(consultation._id)}><BsClipboard2Plus style={{marginRight: "5px"}}/>Prescription</Button>
+                  </Stack>
+                </div>
+              </Grid>
               ))
             ) : (
               <Grid item xs={12}>
@@ -596,6 +725,7 @@ export default function ConsultationPage() {
                         <Button variant="contained" onClick={() => handleUpdateConsultation(consultation)}>
                           Update
                         </Button>
+                      <Button variant="contained" onClick={() => handleNewOrdonnance(consultation._id)} ><BsClipboard2Plus style={{marginRight: "5px"}}/>Prescription</Button>
                       </Stack>
                     </div>
                   </Grid>
