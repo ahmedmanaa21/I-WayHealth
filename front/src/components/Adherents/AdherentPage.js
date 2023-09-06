@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 
 import AdherentDetails from './AdherentsInformation'; // Assurez-vous d'importer correctement votre composant AdherentDetails
 

@@ -6,7 +6,7 @@ const Ordonnance = require("./ordonnance");
 
 const ConsultationSchema = new mongoose.Schema({
     medecin: {
-        type : User.schema,
+        type: User.schema,
     },
     date: {
         type: Date,

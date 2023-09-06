@@ -16,6 +16,9 @@ import DossierPage from './pages/Dossier';
 import ConsultationPage from './pages/Consultation';
 import AdherentsPage from './pages/Adherents';
 import AdherentDetaisPage from './components/Adherents/AdherentPage';
+import UpdateAdherentPage from './components/Adherents/UpdateAdherentPage';
+
+
 
 export default function Router() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -34,6 +37,8 @@ export default function Router() {
         { path: 'consultation', element: <ConsultationPage /> },
         { path: 'Adherents', element: <AdherentsPage /> },
         { path: 'Adherents/:AdherentID', element: <AdherentDetaisPage /> },
+        { path: 'Adherents/Update/:AdherentID', element: <UpdateAdherentPage /> },
+
 
       ],
     },
