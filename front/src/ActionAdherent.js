@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { addAdherent, deleteAdherent, initializeAdheretns } from './AdherentSlice';
+import { addAdherent, deleteAdherent, initializeAdheretns, SetAdherent } from './AdherentSlice';
 
 
 
@@ -36,5 +36,18 @@ export const removeAdherent = (adherentId) => {
         } catch (error) {
             console.error(error);
         }
+    };
+};
+
+
+export const setOneAdherent = (adherentId) => {
+    return async (dispatch) => {
+        axios.get(`http://localhost:3000/api/adherants/${adherentId}`)
+            .then((response) => {
+                dispatch(SetAdherent(response.data));
+            })
+            .catch((error) => {
+                console.error('Erreur lors de la récupération des données de l\'adhérent : ', error);
+            });
     };
 };

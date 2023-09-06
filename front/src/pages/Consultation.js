@@ -117,10 +117,12 @@ export default function ConsultationPage() {
         confirmButtonText: 'Submit',
         focusConfirm: false,
         preConfirm: () => {
+          console.log(document.querySelector('#beneficiaire').value)
           return {
             medecin: parseInt(document.querySelector('#medecin').value, 10),
             date: document.querySelector('#date').value,
             adherant: document.querySelector('#adherant').value,
+
             beneficiaire: document.querySelector('#beneficiaire').value,
             diagnostic: document.querySelector('#diagnostic').value,
           };
@@ -393,25 +395,25 @@ export default function ConsultationPage() {
   const filteredConsultations = consultations.filter((consultation) => {
     const fullName = `${consultation.adherant.nom} ${consultation.adherant.prenom}`;
     const adherantName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
-  
+
     const beneficiaireFullName = `${consultation.beneficiaire.nom} ${consultation.beneficiaire.prenom}`;
     const beneficiaireName = beneficiaireFullName.toLowerCase().includes(searchQuery.toLowerCase());
-  
+
     const doctorFullName = `${consultation.medecin.firstname} ${consultation.medecin.lastname}`;
     const doctorName = doctorFullName.toLowerCase().includes(searchQuery.toLowerCase());
-  
+
     // Return true if any of the conditions match
     return adherantName || beneficiaireName || doctorName;
   });
-  
+
   const filteredMedecins = medecins.filter((medecin) => {
     const fullName = `${medecin.firstname} ${medecin.lastname}`;
     const doctorFullName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
-  
+
     // Return true if the condition matches
     return doctorFullName;
   });
-  
+
 
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);

@@ -1,0 +1,26 @@
+.button-anchor {
+    display: inline-block;
+    /* Afficher comme un bloc */
+    padding: 10px 20px;
+    /* Ajouter un espacement autour du texte */
+    background-color: #007bff;
+    /* Couleur de fond */
+    color: #fff;
+    /* Couleur du texte */
+    text-decoration: none;
+    /* Supprimer le soulignement du lien */
+    border: 1px solid #007bff;
+    /* Bordure */
+    border-radius: 4px;
+    /* Coins arrondis */
+    cursor: pointer;
+    /* Curseur de type pointer au survol */
+}
+
+/* Style au survol */
+.button-anchor:hover {
+    background-color: #0056b3;
+    /* Couleur de fond au survol */
+    border: 1px solid #0056b3;
+    /* Bordure au survol */
+}

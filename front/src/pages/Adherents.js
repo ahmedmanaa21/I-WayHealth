@@ -6,9 +6,6 @@ import { BsPersonAdd } from 'react-icons/bs';
 import { PiUserListDuotone } from 'react-icons/pi';
 import { Provider } from 'react-redux';
 import { store } from "../AdherentSlice";
-
-
-
 import { Form3 } from '../components/Forms/form3';
 import { CollapsibleTable } from '../components/List/List'
 
@@ -35,7 +32,6 @@ export default function AdherentsPage() {
                     <Button variant="contained" endIcon={<BsPersonAdd />} onClick={() => handleButtonClick(<Form3 />)}>Add Adherent</Button>
                 </ButtonGroup>
                 <Container>
-
                     {content}
                 </Container>
             </div>

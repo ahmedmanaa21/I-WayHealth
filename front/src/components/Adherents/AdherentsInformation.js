@@ -22,6 +22,9 @@ import { AiFillContainer } from 'react-icons/ai';
 import { BsCalendarDate } from 'react-icons/bs';
 import { GiLovers } from 'react-icons/gi';
 import { SiMoneygram } from 'react-icons/si';
+import { Link } from 'react-router-dom';
+import '../../style/style.css';
+
 import axios from 'axios';
 
 
@@ -95,7 +98,11 @@ const AdherentDetails = ({ AdherentID }) => {
                         </div>
 
                     </Item>
-
+                    <Item>
+                        <Link to={`/dashboard/Adherents/Update/${AdherentID}`}>
+                            <a className="button-anchor">Update Adherent</a>
+                        </Link>
+                    </Item>
                 </Grid>
             </Grid >
 
