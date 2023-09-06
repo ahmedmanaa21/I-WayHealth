@@ -12,10 +12,10 @@ const ordonnanceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    medicaments: {
-        type: [Medicament.Schema],
-        required: true,
-    },
+    medicaments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Medicament',
+    }],
     duree: {
         type: Number,
         required: true,
