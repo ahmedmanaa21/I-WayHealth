@@ -122,8 +122,7 @@ export default function ConsultationPage() {
             medecin: parseInt(document.querySelector('#medecin').value, 10),
             date: document.querySelector('#date').value,
             adherant: document.querySelector('#adherant').value,
-
-            beneficiaire: document.querySelector('#beneficiaire').value,
+            beneficiaire: document.querySelector('#beneficiaire').value || null,
             diagnostic: document.querySelector('#diagnostic').value,
           };
         },
@@ -396,14 +395,19 @@ export default function ConsultationPage() {
     const fullName = `${consultation.adherant.nom} ${consultation.adherant.prenom}`;
     const adherantName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
 
+
+    let beneficiaireName = "";
+    if (consultation.beneficiaire != null) {
     const beneficiaireFullName = `${consultation.beneficiaire.nom} ${consultation.beneficiaire.prenom}`;
-    const beneficiaireName = beneficiaireFullName.toLowerCase().includes(searchQuery.toLowerCase());
+    beneficiaireName = beneficiaireFullName.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+
 
     const doctorFullName = `${consultation.medecin.firstname} ${consultation.medecin.lastname}`;
     const doctorName = doctorFullName.toLowerCase().includes(searchQuery.toLowerCase());
 
     // Return true if any of the conditions match
-    return adherantName || beneficiaireName || doctorName;
+    return adherantName ||  beneficiaireName || doctorName;
   });
 
   const filteredMedecins = medecins.filter((medecin) => {
@@ -502,8 +506,11 @@ export default function ConsultationPage() {
                           </Typography>
                           <Typography variant="body2">Diagnostic: {consultation.diagnostic}</Typography>
                           <Typography variant="body2">Adherant: {consultation.adherant.nom} {consultation.adherant.prenom}</Typography>
-                          <Typography variant="body2">Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}</Typography>
-                        </>
+                          {consultation.beneficiaire ? (
+                        <Typography variant="body2">
+                          Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}
+                        </Typography>
+                      ) : null}                        </>
                       ) : (
                         <Typography variant="body2">This consultation is missing doctor information.</Typography>
                       )}
@@ -577,9 +584,11 @@ export default function ConsultationPage() {
                       <Typography variant="body2">
                         Adherant: {consultation.adherant.nom} {consultation.adherant.prenom}
                       </Typography>
-                      <Typography variant="body2">
-                        Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}
-                      </Typography>
+                      {consultation.beneficiaire ? (
+                        <Typography variant="body2">
+                          Beneficiaire: {consultation.beneficiaire.nom} {consultation.beneficiaire.prenom}
+                        </Typography>
+                      ) : null}
                       <Stack direction="row" spacing={2} mt={2}>
                         <Button variant="contained" onClick={() => handleDeleteConsultation(consultation._id)}>
                           Delete
