@@ -11,16 +11,16 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import axios from 'axios';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Link } from 'react-router-dom';
 import { AiFillDelete } from 'react-icons/ai';
 import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css'; // Importez les styles si nécessaire
+
 import { useSelector } from 'react-redux/es/hooks/useSelector';
 import { useDispatch } from 'react-redux/es/hooks/useDispatch';
-import 'sweetalert2/dist/sweetalert2.min.css'; // Importez les styles si nécessaire
 import { removeAdherent, fetchAdherents } from '../../ActionAdherent';
 
 

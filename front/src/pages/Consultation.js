@@ -117,6 +117,7 @@ export default function ConsultationPage() {
         confirmButtonText: 'Submit',
         focusConfirm: false,
         preConfirm: () => {
+          console.log(document.querySelector('#beneficiaire').value)
           return {
             medecin: parseInt(document.querySelector('#medecin').value, 10),
             date: document.querySelector('#date').value,
@@ -393,6 +394,7 @@ export default function ConsultationPage() {
   const filteredConsultations = consultations.filter((consultation) => {
     const fullName = `${consultation.adherant.nom} ${consultation.adherant.prenom}`;
     const adherantName = fullName.toLowerCase().includes(searchQuery.toLowerCase());
+
 
     let beneficiaireName = "";
     if (consultation.beneficiaire != null) {
