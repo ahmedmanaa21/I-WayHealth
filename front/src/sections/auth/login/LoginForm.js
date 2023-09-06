@@ -50,6 +50,9 @@ export default function LoginForm() {
       } else if (error.response && error.response.status === 404) {
         // User not found
         swal('User not found', 'Please check your username and password', 'error');
+      }else if (error.response && error.response.status === 402) {
+        // User not found
+        swal('Unauthorized !', 'Face recognition failed, Wrong user !', 'error');
       } else {
         // Other error occurred
         swal('Error', 'Wrong Password !', 'error');
