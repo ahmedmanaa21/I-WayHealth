@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BiUser } from 'react-icons/bi';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -37,16 +38,9 @@ function Row({ row, handleDelete }) {
 
 
         <TableCell align="left">
-          <Link to={`/dashboard/Adherents/${row._id}`}><img
-            src={row.photo}
-            alt='user'
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '30%',
-            }}
-
-          /></Link>
+          <Link to={`/dashboard/Adherents/${row._id}`}>
+            <BiUser style={{ fontSize: '20px', color: 'black' }} />
+          </Link>
         </TableCell>
 
         <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.nom}</TableCell>

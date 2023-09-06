@@ -283,9 +283,11 @@ export default function MedicamentsPage() {
             onChange={handleSearchInputChange}
           />
         </Stack>
+        
 
 
         <Grid container spacing={3}>
+          
           {filteredMedicaments.map((medicament) => (
             <Grid item xs={12} sm={6} md={4} key={medicament._id}>
               <div style={{ border: '1px solid #ccc', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -310,10 +312,6 @@ export default function MedicamentsPage() {
             </Grid>
           ))}
         </Grid>
-
-
-
-
       </Container>
     </>
   );
