@@ -4,6 +4,7 @@ import { store } from "../../AdherentSlice";
 import { EditAdherent } from '../Forms/EditAdherent';
 
 
+
 const UpdateAdherentPage = () => {
     const { AdherentID } = useParams(); // Récupère le paramètre AdherentID de la route
 

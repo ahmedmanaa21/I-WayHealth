@@ -5,6 +5,9 @@ const Consultation = require("../models/Consultation");
 const Dossier = require("../models/Dossier");
 const Ordonnance = require("../models/ordonnance");
 const Medicament = require("../models/Medicaments");
+const multer = require("multer");
+const path = require("path");
+
 const { Router } = require("express");
 const router = Router();
 
@@ -34,49 +37,39 @@ router.get('/adherants/:id', async (req, res) => {
     }
 });
 
+
+
+
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "../front/src/utils/AdherentPictures");
+    },
+    filename: function (req, file, cb) {
+        cb(null, req.body.nom + "-" + Date.now() + path.extname(file.originalname));
+    },
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedFileTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+    ];
+    if (allowedFileTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+};
+
+let upload = multer({ storage, fileFilter });
+
 // CREATE a new adherant with assigining his beneficaires to it and save them to beneficaires collection
-router.post('/adherants', async (req, res) => {
+router.post('/adherants', upload.single("image"), async (req, res) => {
     try {
-        //     const adherantData = req.body;
-        //     const adherant = new Adherants({
-        //         nom: adherantData.nom,
-        //         prenom: adherantData.prenom,
-        //         date_naissance: adherantData.date_naissance,
-        //         sexe: adherantData.sexe,
-        //         date_adhesion: adherantData.date_adhesion,
-        //         adresse: adherantData.adresse,
-        //         vip: adherantData.vip,
-        //         telephone: adherantData.telephone,
-        //         email: adherantData.email,
-        //         situation_familiale: adherantData.situation_familiale,
-        //         situation_adhesion: adherantData.situation_adhesion,
-        //         Benefciaire: [],
-        //     });
 
-        //     for (const beneficaireData of adherantData.Benefciaire) {
-        //         const beneficaire = new Beneficaires(beneficaireData);
-        //         beneficaire.Adherant = adherant; 
-        //         await beneficaire.save();
-        //         adherant.Benefciaire.push(beneficaire);
-        //     }
-        //     await adherant.save();
-
-
-        //     const adherantResponse = {
-        //         _id: adherant._id,
-        //         nom: adherant.nom,
-        //         prenom: adherant.prenom,            
-        //         Benefciaire: adherant.Benefciaire.map(beneficaire => ({
-        //             _id: beneficaire._id,
-        //             nom: beneficaire.nom,
-        //             prenom: beneficaire.prenom,
-
-        //         })),
-        //     };
-        //     res.json(adherantResponse);
-        // } catch (err) {
-        //     console.log(err);
-        //     res.status(500).json({ error: 'Internal server error' });
         const { email: email,
             nom: nom,
             prenom: prenom,
@@ -87,8 +80,7 @@ router.post('/adherants', async (req, res) => {
             date_adhesion: date_adhesion,
             apci: apci,
             couple: couple,
-            photo: photo,
-            Benefciaire: Benefciaire
+            Benefciaire: Benefciaire,
 
         } = req.body;
         const Adherant = new Adherants({
@@ -102,7 +94,7 @@ router.post('/adherants', async (req, res) => {
             date_adhesion: date_adhesion,
             apci: apci,
             couple: couple,
-            photo: photo,
+            image: req.file.filename,
             Benefciaire: []
         });
 
@@ -126,7 +118,7 @@ router.post('/adherants', async (req, res) => {
         await Adherant.save();
 
 
-        res.status(201).json(Benefciaire);
+        res.status(201).json(Adherant);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Une erreur est survenue lors de la création de l'adherent." });
@@ -136,19 +128,118 @@ router.post('/adherants', async (req, res) => {
 
 
 // UPDATE an existing adherant by ID 
-router.put('/adherants/:id', async (req, res) => {
+router.put('/adherants/:id', upload.single("image"), async (req, res) => {
     try {
-        const updatedAdherant = await Adherants.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true } // Return the updated adherant
-        );
-        if (!updatedAdherant) {
 
-            return res.status(404).json({ error: 'Adherant not found' });
+        const adherantData = req.body
+        let adherant = await Adherants.findById(req.params.id);
+        console.log(req.body)
+
+        let updatedBeneficiaires = []
+        const id_ben = [];
+        if (req.body.Benefciaire) {
+            for (const id of req.body.Benefciaire) {
+                if (id._id && id._id !== undefined) {
+                    id_ben.push(id._id)
+                }
+            }
         }
-        res.json(updatedAdherant);
+        const InitialList = await Beneficaires.find()
+        for (const a of InitialList) {
+            if (a.Adherant == req.params.id) {
+                if (!id_ben.includes(a._id.toString())) {
+                    await Beneficaires.findByIdAndDelete(a._id)
+                }
+            }
+        }
+
+        if (req.body.Benefciaire) {
+            updatedBeneficiaires = await Promise.all(
+                adherantData.Benefciaire.map(async (Beneficaire) => {
+
+                    if (Beneficaire._id == null) {
+                        const updatedBeneficaire = Beneficaires.create({
+                            nom: Beneficaire.nom,
+                            prenom: Beneficaire.prenom,
+                            date_naissance: Beneficaire.date_naissance,
+                            sexe: Beneficaire.sexe,
+                            situation_familiale: Beneficaire.situation_familiale,
+                            Adherant: adherant
+                        })
+                        return updatedBeneficaire;
+                    } else {
+
+                        const updatedBeneficaire = await Beneficaires.findByIdAndUpdate(
+                            Beneficaire._id,
+                            {
+                                nom: Beneficaire.nom,
+                                prenom: Beneficaire.prenom,
+                                date_naissance: Beneficaire.date_naissance,
+                                sexe: Beneficaire.sexe,
+                                situation_familiale: Beneficaire.situation_familiale,
+                                Adherant: adherant,
+                            },
+                            { new: true });
+
+                        return updatedBeneficaire;
+
+
+                    }
+                }));
+        }
+
+
+        if (req.file) {
+            const updatedAdh = await Adherants.findByIdAndUpdate(
+                req.params.id,
+                {
+                    nom: adherantData.nom,
+                    prenom: adherantData.prenom,
+                    date_naissance: adherantData.date_naissance,
+                    sexe: adherantData.sexe,
+                    date_adhesion: adherantData.date_adhesion,
+                    adresse: adherantData.adresse,
+                    vip: adherantData.vip,
+                    telephone: adherantData.telephone,
+                    email: adherantData.email,
+                    situation_familiale: adherantData.situation_familiale,
+                    situation_adhesion: adherantData.situation_adhesion,
+                    image: req.file.filename,
+                    Benefciaire: updatedBeneficiaires,
+
+                },
+                { new: true }
+            );
+            adherant = updatedAdh
+        } else {
+            const updatedAdh = await Adherants.findByIdAndUpdate(
+                req.params.id,
+                {
+                    nom: adherantData.nom,
+                    prenom: adherantData.prenom,
+                    date_naissance: adherantData.date_naissance,
+                    sexe: adherantData.sexe,
+                    date_adhesion: adherantData.date_adhesion,
+                    adresse: adherantData.adresse,
+                    vip: adherantData.vip,
+                    telephone: adherantData.telephone,
+                    email: adherantData.email,
+                    situation_familiale: adherantData.situation_familiale,
+                    situation_adhesion: adherantData.situation_adhesion,
+                    image: adherant.image,
+                    Benefciaire: updatedBeneficiaires,
+                },
+                { new: true }
+            );
+            adherant = updatedAdh
+        }
+
+
+
+        return res.status(200).json(adherant);
     } catch (err) {
+        console.log(req.body)
+
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -156,8 +247,9 @@ router.put('/adherants/:id', async (req, res) => {
 
 
 
+
 // DELETE an adherant by ID
-router.delete('/adherants/:id', async (req, res) => {
+router.delete('/adherants/:id', upload.single("image"), async (req, res) => {
     try {
         const Adherant = await Adherants.findById(req.params.id);
         for (const beneficaireData of Adherant.Benefciaire) {

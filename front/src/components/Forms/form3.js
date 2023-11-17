@@ -75,10 +75,12 @@ export const Form3 = () => {
             cancelButtonText: 'Annuler',
         }).then((result) => {
             if (result.isConfirmed) {
-
+                console.log(formData)
                 dispatch(AddAdherent(formData))
+
                 setFormData({
                     nom: '',
+                    image: '',
                     prenom: '',
                     email: '',
                     situation_familiale: '',
@@ -100,7 +102,11 @@ export const Form3 = () => {
 
 
     };
-
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        setFormData((prevData) => ({ ...prevData, image: file }));
+        console.log(formData)
+    };
     return (
         <form onSubmit={handleSubmit}>
             <TextField label="Nom" name="nom" value={formData.nom} onChange={handleInputChange} required fullWidth margin="normal" />
@@ -126,7 +132,6 @@ export const Form3 = () => {
                 fullWidth
                 margin="normal"
             />
-            <FormControlLabel label="vip" control={<Checkbox name="vip" checked={formData.vip} onChange={handleInputChange} />} />
             <br /><Label style={{ marginTop: '20px' }}> Date D'adhesion</Label>
             <TextField
                 name="date_adhesion"
@@ -136,6 +141,18 @@ export const Form3 = () => {
                 fullWidth
                 margin="normal"
             />
+
+
+            <FormControlLabel label="vip" control={<Checkbox name="vip" checked={formData.vip} onChange={handleInputChange} />} />
+            <br /><Label style={{ marginTop: '20px' }}> Adherent Image</Label>
+            <TextField
+                name="image"
+                type="file"
+                onChange={handleImageChange}
+                fullWidth
+                margin="normal"
+            />
+
             <FormControlLabel label="Couple" control={<Checkbox name="couple" checked={formData.couple} onChange={handleInputChange} />} />
             <FormControlLabel label="APCI" control={<Checkbox name="apci" checked={formData.apci} onChange={handleInputChange} />} />
             <FormControl fullWidth margin="normal">

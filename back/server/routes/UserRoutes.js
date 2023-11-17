@@ -86,6 +86,7 @@ router.post("/", upload.single("image"), async (req, res) => {
         approved: approved,
         ip: ip,
       });
+      console.log(req.file)
       await user.save();
       res.json(user);
     }
@@ -289,7 +290,7 @@ router.get('/find/address/:address', verifyToken, async (req, res) => {
 });
 
 //find users by role
-router.get('/find/role/:role', verifyToken ,  async (req, res) => {
+router.get('/find/role/:role', verifyToken, async (req, res) => {
   try {
     const role = req.params.role;
     const foundUsers = await User.find({ role });

@@ -35,7 +35,6 @@ const BeneficairesSchema = new mongoose.Schema({
     Adherant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Adherants',
-        required: true,
     },
 },
     { timestamps: true }
