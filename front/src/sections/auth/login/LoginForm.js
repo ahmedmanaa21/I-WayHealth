@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate , Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { TextField, Button, Stack } from '@mui/material';
 import swal from 'sweetalert';
-import { useAuthStore , useUserStore } from "../../../utils/zustand";
+import { useAuthStore, useUserStore } from "../../../utils/zustand";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function LoginForm() {
   const login = useAuthStore((state) => state.login);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  
+
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -29,6 +29,12 @@ export default function LoginForm() {
 
   const handleLogin = async () => {
     try {
+      // Show a Swal message to instruct the user
+      swal('Face Recognition', 'Please put your face in front of the camera and wait for login...', 'info', {
+        buttons: false,
+        closeOnClickOutside: false,
+        timer: 8000, 
+      });
       // Make an API request to your login endpoint
       const response = await axios.post('http://localhost:3000/user/login', user);
       // Set token response data
@@ -50,6 +56,9 @@ export default function LoginForm() {
       } else if (error.response && error.response.status === 404) {
         // User not found
         swal('User not found', 'Please check your username and password', 'error');
+      } else if (error.response && error.response.status === 402) {
+        // User not found
+        swal('Unauthorized !', 'Face recognition failed, Wrong user !', 'error');
       } else {
         // Other error occurred
         swal('Error', 'Wrong Password !', 'error');
@@ -60,30 +69,30 @@ export default function LoginForm() {
   return (
     <>
       <Stack spacing={3}>
-      <TextField
-        label="Username"
-        value={username}
-        onChange={handleUsernameChange}
-      />
-      <TextField
-        label="Password"
-        type="password"
-        value={password}
-        onChange={handlePasswordChange}
-      />
-      <Button variant="contained" onClick={handleLogin}>
-        Login
-      </Button>
-      <Button
-            fullWidth
-            size="large"
-            color="inherit"
-            variant="outlined"
-            component={Link} // Use the Link component
-            to="/ForgotPassword" // Navigate to the "ForgotPage"
-          >
-            Forgot Password
-          </Button>
+        <TextField
+          label="Username"
+          value={username}
+          onChange={handleUsernameChange}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          value={password}
+          onChange={handlePasswordChange}
+        />
+        <Button variant="contained" onClick={handleLogin}>
+          Login
+        </Button>
+        <Button
+          fullWidth
+          size="large"
+          color="inherit"
+          variant="outlined"
+          component={Link} // Use the Link component
+          to="/ForgotPassword" // Navigate to the "ForgotPage"
+        >
+          Forgot Password
+        </Button>
       </Stack>
     </>
   );
