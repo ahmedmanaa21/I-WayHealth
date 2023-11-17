@@ -12,7 +12,7 @@ import account from '../../../_mock/account';
 // ----------------------------------------------------------------------
 
 import { useUserStore, useAuthStore } from "../../../utils/zustand";
-import defaultAvatar from '../../../utils/profilePictures/default.jpg';
+import defaultAvatar from '../../../utils/default.jpg';
 
 const MENU_OPTIONS = [
   {

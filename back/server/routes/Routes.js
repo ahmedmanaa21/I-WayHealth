@@ -421,7 +421,7 @@ router.post('/consultations', async (req, res) => {
             medecin: await User.findById(consultation.medecin),
             date: consultation.date,
             adherant: await Adherants.findById(consultation.adherant),
-            beneficiaire: await Beneficaires.findById(consultation.beneficiaire),
+            beneficiaire: consultation.beneficiaire ? await Beneficaires.findById(consultation.beneficiaire) : null,
             diagnostic: consultation.diagnostic,
         });
         if (dbConsultation.medecin === null) {
@@ -429,9 +429,6 @@ router.post('/consultations', async (req, res) => {
         }
         if (dbConsultation.adherant === null) {
             return res.status(404).json({ error: 'Adherant not found' });
-        }
-        if (dbConsultation.beneficiaire === null) {
-            return res.status(404).json({ error: 'Beneficiaire not found' });
         }
         const savedConsultation = await dbConsultation.save();
         res.json(savedConsultation);
@@ -656,23 +653,54 @@ router.get('/ordonnance/:id', async (req, res) => {
 router.post('/ordonnance', async (req, res) => {
     try {
         const ordonnanceData = req.body;
+
+        // Check if the consultation already has an ordonnance
+        const existingOrdonnance = await Ordonnance.findOne({ consultation: ordonnanceData.consultation });
+
+        if (existingOrdonnance) {
+            return res.status(400).json({ error: 'Consultation already has an prescription' });
+        }
+
+        const medicamentIds = ordonnanceData.medicaments;
+        const medicamentsList = await Promise.all(
+            medicamentIds.map(async (medicamentId) => {
+                const medicament = await Medicament.findById(medicamentId);
+                if (!medicament) {
+                    throw new Error(`Medicament not found for ID: ${medicamentId}`);
+                }
+                return medicament;
+            })
+        );
+
         const ordonnance = new Ordonnance({
-            consultation: ordonnanceData.consultation,
+            consultation: await Consultation.findById(ordonnanceData.consultation),
             commentaire: ordonnanceData.commentaire,
             duree: ordonnanceData.duree,
+            medicaments: medicamentsList,
         });
-        for (const medicamentData of ordonnanceData.medicaments) {
-            const medicament = new Medicament(medicamentData);
-            await medicament.save();
-            ordonnance.medicaments.push(medicament);
-        }
+
         await ordonnance.save();
-        res.json(ordonnance);
+
+        const consultationId = ordonnanceData.consultation;
+        const consultation = await Consultation.findByIdAndUpdate(
+            consultationId,
+            { ordonnance: ordonnance },
+            { new: true }
+        );
+
+        if (!consultation) {
+            return res.status(404).json({ error: 'Consultation not found' });
+        }
+
+        res.json(consultation);
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
+
 // UPDATE an existing Ordonnance by ID
 // Update an existing Ordonnance
 router.put('/ordonnance/:id', async (req, res) => {

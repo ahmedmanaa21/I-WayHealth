@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { BiUser } from 'react-icons/bi';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';

@@ -11,6 +11,9 @@ const path = require("path");
 const Token = require("../models/Token");
 const sendEmail = require("../utils/sendMail");
 const crypto = require("crypto");
+const { spawn } = require('child_process');
+
+
 
 // Get all users
 router.get("/users", verifyToken, async (req, res) => {
@@ -40,7 +43,7 @@ const storage = multer.diskStorage({
     cb(null, "../front/src/utils/profilePictures");
   },
   filename: function (req, file, cb) {
-    cb(null, req.body._id + "-" + Date.now() + path.extname(file.originalname));
+    cb(null, req.body._id + "-" + req.body._id + path.extname(file.originalname));
   },
 });
 
@@ -157,41 +160,56 @@ router.post("/login", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     } else if (!user.approved) {
-      return res.status(401).json({ message: "User not approved , please wait for an admin to approve your account" });
+      return res.status(401).json({ message: "User not approved, please wait for an admin to approve your account" });
     }
 
-    // Compare the provided password with the stored hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password).then((isCorrect) => {
-      if (isCorrect) {
-        const payload = {
-          id: user._id,
-          username: user.username,
-        };
-        jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          (err, token) => {
-            if (err) {
-              res.status(500).send("Error signing token");
-            }
-            res
-              .status(200)
-              .send({
+    // Call the face recognition script
+    const pythonProcess = spawn(process.env.PYTHON_PATH, ['server/server.py']);
+    const timeout = setTimeout(() => {
+      pythonProcess.kill();
+      res.status(401).json({ message: 'Unauthorized. Face recognition timeout.' });
+    }, 40000);
+
+    pythonProcess.stdout.on('data', async (data) => {
+      clearTimeout(timeout);
+      const returnedUserId = data.toString().trim();
+
+      // Check if the returned user ID is the same as the ID of the user who is logging in
+      if (returnedUserId === user._id.toString()) {
+        // Compare the provided password with the stored hashed password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (isPasswordValid) {
+          const payload = {
+            id: user._id,
+            username: user.username,
+          };
+
+          jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            (err, token) => {
+              if (err) {
+                return res.status(500).json({ message: "Error signing token" });
+              }
+              return res.status(200).json({
                 token: token,
                 user: JSON.stringify(user),
               });
-          }
-        );
+            }
+          );
+        } else {
+          return res.status(400).json({ message: "Invalid Username or Password" });
+        }
       } else {
-        res.status(400).send("Invalid Username or Password");
+        return res.status(402).json({ message: 'Unauthorized. Face recognition failed.' });
       }
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
-
 
 router.post("/forgotPassword", async (req, res) => {
   try {
