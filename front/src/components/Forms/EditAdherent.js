@@ -83,6 +83,18 @@ export const EditAdherent = ({ AdherentID }) => {
         return `${year}-${month}-${day}`;
     };
 
+    const updateData = async (id, updatedData) => {
+        try {
+            const response = await axios.put(`http://localhost:3000/api/adherants/${id}`, updatedData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            dispatch(updateAdherent(response.data));
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour des données :', error);
+        }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -95,11 +107,22 @@ export const EditAdherent = ({ AdherentID }) => {
             cancelButtonText: 'Annuler',
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log(adherent)
-
+                updateData(adherent._id, adherent)
                 Swal.fire('Adherent Ajouté !', '', 'success');
             }
         });
+
+    };
+
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+
+        const updatedAdherent = {
+            ...adherent,
+            image: file
+        };
+        console.log(adherent)
+        dispatch(updateAdherent(updatedAdherent));
 
     };
 
@@ -130,6 +153,16 @@ export const EditAdherent = ({ AdherentID }) => {
                 margin="normal"
             />
             <FormControlLabel label="vip" control={<Checkbox name="vip" checked={adherent.vip} onChange={handleInputChange} />} />
+            <br /><Label style={{ marginTop: '20px' }}> Adherent Image</Label>
+            <TextField
+                name="image"
+                type="file"
+                onChange={handleImageChange}
+                fullWidth
+                margin="normal"
+            />
+
+
             <br /><Label style={{ marginTop: '20px' }}> Date D'adhesion</Label>
             <TextField
                 name="date_adhesion"
@@ -139,6 +172,7 @@ export const EditAdherent = ({ AdherentID }) => {
                 fullWidth
                 margin="normal"
             />
+
             <FormControlLabel label="Couple" control={<Checkbox name="couple" checked={adherent.couple} onChange={handleInputChange} />} />
             <FormControlLabel label="APCI" control={<Checkbox name="apci" checked={adherent.apci} onChange={handleInputChange} />} />
             <FormControl fullWidth margin="normal">

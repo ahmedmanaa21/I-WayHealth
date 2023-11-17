@@ -27,6 +27,7 @@ function Row({ row, handleDelete }) {
   ;
   const [open, setOpen] = React.useState(false);
 
+  const images = require.context('../../utils/AdherentPictures/', true, /\.(png|jpe?g|gif|svg)$/);
 
 
   return (
@@ -37,7 +38,7 @@ function Row({ row, handleDelete }) {
 
         <TableCell align="left">
           <Link to={`/dashboard/Adherents/${row._id}`}><img
-            src={row.photo}
+            src={images(`./${row.image}`)}
             alt='user'
             style={{
               width: '40px',
@@ -48,11 +49,11 @@ function Row({ row, handleDelete }) {
           /></Link>
         </TableCell>
 
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.nom}</TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.prenom}</TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.email}</TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.situation_familiale}</TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{
+        <TableCell align="left" style={{ width: '70px', fontSize: '12px', fontWeight: 'bold' }}>{row.nom}</TableCell>
+        <TableCell align="left" style={{ width: '70px', fontSize: '12px', fontWeight: 'bold' }}>{row.prenom}</TableCell>
+        <TableCell align="left" style={{ width: '70px', fontSize: '12px', fontWeight: 'bold' }}>{row.email}</TableCell>
+        <TableCell align="left" style={{ width: '70px', fontSize: '12px', fontWeight: 'bold' }}>{row.situation_familiale}</TableCell>
+        <TableCell align="left" style={{ width: '70px', fontSize: '12px', fontWeight: 'bold' }}>{
           new Intl.DateTimeFormat('en-US', {
             year: 'numeric',
             month: 'long',
@@ -61,21 +62,10 @@ function Row({ row, handleDelete }) {
           }).format(new Date(row.date_naissance))}
 
         </TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.vip.toString()}</TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.situation_adhesion}</TableCell>
-        <TableCell align="left" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{
+        <TableCell align="left" style={{ width: '70px', fontSize: '12px', fontWeight: 'bold' }}>{row.situation_adhesion}</TableCell>
 
-          new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
 
-          }).format(new Date(row.date_adhesion))
-
-        }</TableCell>
-        <TableCell align="right" style={{ width: '700px', fontSize: '10px', fontWeight: 'bold' }}>{row.apci.toString()}</TableCell>
-        <TableCell align="right" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }}>{row.couple.toString()}</TableCell>
-        <TableCell style={{ width: '20px', fontSize: '10px' }}>
+        <TableCell style={{ width: '20px', fontSize: '12px' }}>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -202,18 +192,14 @@ export const CollapsibleTable = () => {
           <TableRow>
 
             <TableCell style={{ width: '80px', fontSize: '12px' }}>Image</TableCell>
-            <TableCell align="left" style={{ width: '50px', fontSize: '10px' }}>Nom</TableCell>
-            <TableCell align="left" style={{ width: '50px', fontSize: '10px' }}>Prenom</TableCell>
-            <TableCell align="left" style={{ width: '50px', fontSize: '10px' }}>email</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>situation Familiale</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>Date_naissance</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>VIP</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>Situation D'adhesion</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>Date d'adhesion</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>APCI</TableCell>
-            <TableCell align="left" style={{ width: '70px', fontSize: '10px' }}>Couple</TableCell>
-            <TableCell style={{ width: '20px', fontSize: '10px' }} />
-            <TableCell style={{ width: '20px', fontSize: '10px' }} />
+            <TableCell align="left" style={{ width: '50px', fontSize: '12px' }}>Nom</TableCell>
+            <TableCell align="left" style={{ width: '50px', fontSize: '12px' }}>Prenom</TableCell>
+            <TableCell align="left" style={{ width: '50px', fontSize: '12px' }}>email</TableCell>
+            <TableCell align="left" style={{ width: '70px', fontSize: '12px' }}>situation Familiale</TableCell>
+            <TableCell align="left" style={{ width: '70px', fontSize: '12px' }}>Date_naissance</TableCell>
+            <TableCell align="left" style={{ width: '70px', fontSize: '12px' }}>Situation D'adhesion</TableCell>
+            <TableCell style={{ width: '20px', fontSize: '12px' }} />
+            <TableCell style={{ width: '20px', fontSize: '12px' }} />
 
           </TableRow>
         </TableHead>

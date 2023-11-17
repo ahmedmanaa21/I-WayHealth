@@ -17,8 +17,15 @@ export const fetchAdherents = () => {
 export const AddAdherent = (Data) => {
     return async (dispatch) => {
         try {
-            const response = await axios.post('http://localhost:3000/api/adherants', Data); // Remplacez 'URL_DE_VOTRE_API' par l'URL appropriée
-            dispatch(addAdherent(Data)); // Mettez à jour l'état initial avec les données de la requête GET
+            const response = await axios.post('http://localhost:3000/api/adherants', Data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            console.log(response.data)
+            // Remplacez 'URL_DE_VOTRE_API' par l'URL appropriée
+            dispatch(addAdherent(response.data)); // Mettez à jour l'état initial avec les données de la requête GET
 
         } catch (error) {
             console.error(error);
@@ -42,7 +49,7 @@ export const removeAdherent = (adherentId) => {
 
 export const setOneAdherent = (adherentId) => {
     return async (dispatch) => {
-        axios.get(`http://localhost:3000/api/adherants/${adherentId}`)
+        await axios.get(`http://localhost:3000/api/adherants/${adherentId}`)
             .then((response) => {
                 dispatch(SetAdherent(response.data));
             })

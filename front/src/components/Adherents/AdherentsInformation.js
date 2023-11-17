@@ -23,9 +23,12 @@ import { BsCalendarDate } from 'react-icons/bs';
 import { GiLovers } from 'react-icons/gi';
 import { SiMoneygram } from 'react-icons/si';
 import { Link } from 'react-router-dom';
+
 import '../../style/style.css';
 
-import axios from 'axios';
+import { useSelector } from 'react-redux/es/hooks/useSelector';
+
+
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -37,24 +40,20 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const AdherentDetails = ({ AdherentID }) => {
-    const [AdherentsData, setAdherentData] = useState([]);
-    const [Benefciaire, setBenefciaire] = useState([]);
+
+
+    const Adherents = useSelector((state) => state.adherent)
+
+    const AdherentsData = Adherents.find((adherent) => adherent._id === AdherentID);
+
+    console.log(AdherentsData)
 
 
 
-    useEffect(() => {
-        // Remplacez 'YOUR_API_URL' par l'URL correcte de votre API GET
-        axios.get(`http://localhost:3000/api/adherants/${AdherentID}`)
-            .then(response => {
-                setAdherentData(response.data);
-                setBenefciaire(response.data.Benefciaire)
-                // Mettez à jour l'état avec les données reçues
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }, []);
+    const images = require.context('../../utils/AdherentPictures/', true, /\.(png|jpe?g|gif|svg)$/);
 
+
+    console.log(AdherentsData.image)
 
     return (
         <>
@@ -65,7 +64,7 @@ const AdherentDetails = ({ AdherentID }) => {
                             <CardMedia
                                 component="img"
                                 height="300"
-                                image="https://scontent.ftun15-1.fna.fbcdn.net/v/t1.6435-9/117172756_3279974922069756_4894667319786187248_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=p3E4UrMlzQ4AX-srd0G&_nc_ht=scontent.ftun15-1.fna&oh=00_AfCdS72s07uqwc29tq33ehdzFZNjIDX_V8855sV7n0pZuw&oe=651730CB"
+                                image={images(`./${AdherentsData.image}`)}
                                 alt="green iguana"
                             />
                             <CardContent>
@@ -128,7 +127,7 @@ const AdherentDetails = ({ AdherentID }) => {
                     </TableHead>
                     <TableBody>
                         {
-                            Benefciaire.map((Benefciaire) => (
+                            AdherentsData.Benefciaire.map((Benefciaire) => (
                                 <TableRow >
 
                                     <TableCell align="left" component="th" scope="row" style={{ width: '70px', fontSize: '10px', fontWeight: 'bold' }} >

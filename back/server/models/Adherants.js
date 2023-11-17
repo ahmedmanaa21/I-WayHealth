@@ -58,12 +58,13 @@ const AdherantsSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    photo: {
-        type: String,
-        required: false,
-    },
+
     Benefciaire: {
         type: [Beneficaires.schema],
+        required: false,
+    },
+    image: {
+        type: String,
         required: false,
     },
 },

@@ -67,7 +67,7 @@ export default function SignupForm() {
   };
 
   const handleAddressChange = (event) => {
-    setAddress(event.target.value); 
+    setAddress(event.target.value);
   };
 
   const handleSignup = async () => {
@@ -85,8 +85,8 @@ export default function SignupForm() {
         place,
         address,
       };
-
       // Make an API request to your signup endpoint
+      console.log(newUser)
       const response = await axios.post('http://localhost:3000/user/', newUser, {
         headers: {
           "Content-Type": "multipart/form-data",
